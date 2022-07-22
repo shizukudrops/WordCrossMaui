@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Shell
+    x:Class="WordCrossMaui.AppShell"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:local="clr-namespace:WordCrossMaui"
+    FlyoutBehavior="Disabled">
+    
+    <ShellContent
+        Title="Search"
+        ContentTemplate="{DataTemplate local:MainPage}"
+        Route="Main" />
+
+    <ShellContent
+        Title="Add Dictionary"
+        ContentTemplate="{DataTemplate local:AddDictionaryPage}"
+        Route="AddDictionary" />
+
+    <ShellContent
+        Title="Manage Dictionaries"
+        ContentTemplate="{DataTemplate local:ManageDictionaryPage}"
+        Route="ManageDictionary" />
+
+    <ShellContent
+        Title="About"
+        ContentTemplate="{DataTemplate local:AboutPage}"
+        Route="About"/>
+
+</Shell>

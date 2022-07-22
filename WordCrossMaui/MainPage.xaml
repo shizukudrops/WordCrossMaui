@@ -1,0 +1,48 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="WordCrossMaui.MainPage"
+             >
+    <Shell.TitleView>
+        <Grid ColumnSpacing="5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2.5*"/>
+                <ColumnDefinition Width="5*"/>
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <Entry x:Name="searchBox" Completed="SearchBox_Completed" ClearButtonVisibility="WhileEditing" Placeholder="検索するワードを入力" />
+
+            <HorizontalStackLayout Grid.Column="1" Spacing="5">
+                <Button Text="←" Clicked="Back_Clicked" />
+                <Button Text="→" Clicked="Forward_Clicked"/>
+                <Button Text="＋" Clicked="AddDictionary_Clicked" />
+                <Button Text="＊" Clicked="ManageDictionary_Clicked" />
+            </HorizontalStackLayout>
+
+            <Button Grid.Column="2" Text="！" Clicked="About_Clicked" HorizontalOptions="End" />
+        </Grid>
+    </Shell.TitleView>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="4*"/>
+        </Grid.ColumnDefinitions>
+
+        <StackLayout>
+            <ListView x:Name="dictList" ItemSelected="DictList_ItemSelected">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <ViewCell>
+                            <Label Text="{Binding Name}" Padding="0, 5, 0, 5" />
+                        </ViewCell>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </StackLayout>
+
+        <WebView x:Name="webView" Grid.Column="1" />
+    </Grid>
+
+</ContentPage>

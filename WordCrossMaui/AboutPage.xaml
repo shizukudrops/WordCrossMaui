@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="WordCrossMaui.AboutPage"
+             Title="About">
+    <VerticalStackLayout Margin="50, 10, 50, 50" Spacing="10" HorizontalOptions="Center">
+        <Label x:Name="AppNameLabel" HorizontalOptions="Center" FontSize="Header" />
+        <Label x:Name="VersionLabel" HorizontalOptions="Center" FontSize="Medium" />
+        <Label x:Name="AuthorLabel"  HorizontalOptions="Center" FontSize="Default" />
+        <Button Text="戻る" Clicked="Return_Clicked" />
+    </VerticalStackLayout>
+</ContentPage>
