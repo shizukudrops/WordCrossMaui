@@ -20,6 +20,9 @@
                 </VisualStateGroupList>
             </Setter>
         </Style>
+        <Style TargetType="Button">
+            <Setter Property="BackgroundColor" Value="{StaticResource Primary}" />
+        </Style>
     </ContentPage.Resources>
 
     <Grid ColumnSpacing="10" Margin="50, 10, 50, 50">

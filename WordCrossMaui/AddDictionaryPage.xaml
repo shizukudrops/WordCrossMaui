@@ -4,6 +4,12 @@
              x:Class="WordCrossMaui.AddDictionaryPage"
              Title="Add Dictionary">
 
+    <ContentPage.Resources>
+        <Style TargetType="Button">
+            <Setter Property="BackgroundColor" Value="{StaticResource Primary}" />
+        </Style>
+    </ContentPage.Resources>
+
     <Grid ColumnSpacing="10" Margin="50, 10, 50, 50" >
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="6*"/>
