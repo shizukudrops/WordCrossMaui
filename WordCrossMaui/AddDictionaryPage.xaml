@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="WordCrossMaui.AddDictionaryPage"
-             Title="Add Dictionary">
+             x:Class="WordCrossMaui.AddDictionaryPage">
 
     <ContentPage.Resources>
         <Style TargetType="Button">
@@ -17,11 +16,11 @@
         </Grid.ColumnDefinitions>
 
         <VerticalStackLayout Grid.Column="0" Spacing="10">
-            <Label Text="Name"></Label>
+            <Label Text="名前"></Label>
             <Entry x:Name="nameBox"></Entry>
-            <Label Text="Base URL" Margin="0,11,0,0"></Label>
+            <Label Text="基礎URL" Margin="0,11,0,0"></Label>
             <Entry x:Name="urlBox"></Entry>
-            <Label Text="Separator" Margin="0,10,0,0"></Label>
+            <Label Text="セパレーター" Margin="0,10,0,0"></Label>
             <Entry x:Name="separatorBox"></Entry>
 
             <Button Text="追加" Clicked="Add_Clicked" />

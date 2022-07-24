@@ -12,17 +12,17 @@
         Route="Main" />
 
     <ShellContent
-        Title="Add Dictionary"
+        Title="辞書を追加"
         ContentTemplate="{DataTemplate local:AddDictionaryPage}"
         Route="AddDictionary" />
 
     <ShellContent
-        Title="Manage Dictionaries"
+        Title="辞書の管理"
         ContentTemplate="{DataTemplate local:ManageDictionaryPage}"
         Route="ManageDictionary" />
 
     <ShellContent
-        Title="About"
+        Title="このアプリについて"
         ContentTemplate="{DataTemplate local:AboutPage}"
         Route="About"/>
 

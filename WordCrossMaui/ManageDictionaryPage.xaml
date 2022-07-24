@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="WordCrossMaui.ManageDictionaryPage"
-             Title="Manage Dictionaries">
+             x:Class="WordCrossMaui.ManageDictionaryPage">
 
     <ContentPage.Resources>
         <Style TargetType="Grid">
@@ -31,16 +30,19 @@
             <ColumnDefinition Width="2*"/>
         </Grid.ColumnDefinitions>
 
-        <CollectionView Grid.Column="0" x:Name="dictList" SelectionMode="Multiple" CanReorderItems="True" Header="登録されている辞書" EmptyView="辞書が登録されていません">
-            <CollectionView.ItemTemplate>
-                <DataTemplate>
-                    <Grid Margin="15, 0, 0, 0" Padding="8">
-                        <Label Text="{Binding Name}" />
-                    </Grid>
-                </DataTemplate>
-            </CollectionView.ItemTemplate>
-        </CollectionView>
-        
+        <VerticalStackLayout Grid.Column="0" Spacing="10">
+            <Label Text="複数選択可／ドラッグで並べ替え" />
+            <CollectionView x:Name="dictList" SelectionMode="Multiple" CanReorderItems="True" EmptyView="辞書が登録されていません">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Grid Margin="15, 0, 0, 0" Padding="8">
+                            <Label Text="{Binding Name}" />
+                        </Grid>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </VerticalStackLayout>
+
         <VerticalStackLayout Grid.Column="1" Spacing="10">
             <Button Text="削除" Clicked="Remove_Clicked" />
             <Button Text="戻る" Clicked="Return_Clicked" />

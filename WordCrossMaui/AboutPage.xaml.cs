@@ -11,7 +11,7 @@ public partial class AboutPage : ContentPage
 
 		AppNameLabel.Text = name;
 		VersionLabel.Text = version;
-		AuthorLabel.Text = "Author: shizukudrops";
+		AuthorLabel.Text = "çÏé“: shizukudrops";
     }
 
 	private async void Return_Clicked(object sender, EventArgs e)
