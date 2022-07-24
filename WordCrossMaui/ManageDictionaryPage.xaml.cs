@@ -32,11 +32,11 @@ public partial class ManageDictionaryPage : ContentPage
 
     private void Remove_Clicked(object sender, EventArgs e)
     {
-        var selected = dictList.SelectedItem as DictionaryInfo;
+        var selected = new List<object>(dictList.SelectedItems);
 
-        if (selected != null)
+        foreach(var d in selected)
         {
-            dictionaryList.Remove(selected);
+            dictionaryList.Remove((DictionaryInfo)d);
         }
     }
 
