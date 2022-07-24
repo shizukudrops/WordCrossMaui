@@ -30,18 +30,16 @@
             <ColumnDefinition Width="2*"/>
         </Grid.ColumnDefinitions>
 
-        <VerticalStackLayout Grid.Column="0" Spacing="10">
-            <Label Text="複数選択可／ドラッグで並べ替え" />
-            <CollectionView x:Name="dictList" SelectionMode="Multiple" CanReorderItems="True" EmptyView="辞書が登録されていません">
-                <CollectionView.ItemTemplate>
-                    <DataTemplate>
-                        <Grid Margin="15, 0, 0, 0" Padding="8">
-                            <Label Text="{Binding Name}" />
-                        </Grid>
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
-            </CollectionView>
-        </VerticalStackLayout>
+        <Label Text="複数選択可／ドラッグで並べ替え" />
+        <CollectionView x:Name="dictList" SelectionMode="Multiple" CanReorderItems="True" EmptyView="辞書が登録されていません" Margin="0, 30, 0, 0">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Grid Margin="15, 0, 4, 0" Padding="8">
+                        <Label Text="{Binding Name}" />
+                    </Grid>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
 
         <VerticalStackLayout Grid.Column="1" Spacing="10">
             <Button Text="削除" Clicked="Remove_Clicked" />
