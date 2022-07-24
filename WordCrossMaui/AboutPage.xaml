@@ -8,5 +8,9 @@
         <Label x:Name="VersionLabel" HorizontalOptions="Center" FontSize="Medium" />
         <Label x:Name="AuthorLabel"  HorizontalOptions="Center" FontSize="Default" />
         <Button Text="戻る" Clicked="Return_Clicked" />
+        <HorizontalStackLayout Margin="0, 30, 0, 0" HorizontalOptions="Center">
+            <CheckBox CheckedChanged="Initialize_CheckedChanged" VerticalOptions="Center" />
+            <Label Text="次回起動時に初期化" VerticalOptions="Center" />
+        </HorizontalStackLayout>
     </VerticalStackLayout>
 </ContentPage>

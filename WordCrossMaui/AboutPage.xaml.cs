@@ -18,4 +18,9 @@ public partial class AboutPage : ContentPage
 	{
 		await Shell.Current.GoToAsync("///Main");
 	}
+
+    void Initialize_CheckedChanged(object sender, CheckedChangedEventArgs e)
+    {
+		Preferences.Set("initialize_on_next_launch", e.Value);
+    }
 }
