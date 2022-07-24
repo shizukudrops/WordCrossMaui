@@ -19,5 +19,6 @@
             <CheckBox CheckedChanged="Initialize_CheckedChanged" VerticalOptions="Center" />
             <Label Text="次回起動時に初期化" VerticalOptions="Center" />
         </HorizontalStackLayout>
+        <Label Text="（辞書リストがリセットされます）" HorizontalOptions="Center" Margin="20, 0, 0, 0" />
     </VerticalStackLayout>
 </ContentPage>

@@ -10,7 +10,7 @@
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
 
-            <Entry x:Name="searchBox" Completed="SearchBox_Completed" ClearButtonVisibility="WhileEditing" Placeholder="検索するワードを入力してエンター" />
+            <Entry x:Name="searchBox" Completed="SearchBox_Completed" ClearButtonVisibility="WhileEditing" Placeholder="検索ワードを入力してエンター" />
 
             <HorizontalStackLayout Grid.Column="1" Spacing="5">
                 <ImageButton Source="back.png" HeightRequest="45" Padding="10" Clicked="Back_Clicked" />
