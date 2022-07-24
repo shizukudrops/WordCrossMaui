@@ -7,6 +7,8 @@ namespace WordCrossMaui;
 [QueryProperty(nameof(DictView), "UpdatedDictionaryList")]
 public partial class MainPage : ContentPage
 {
+    readonly string pathToDictionary = Path.Join(FileSystem.AppDataDirectory, "dic");
+
     ObservableCollection<DictionaryInfo> dictView = new ObservableCollection<DictionaryInfo>();
 
     public ObservableCollection<DictionaryInfo> DictView
@@ -23,7 +25,7 @@ public partial class MainPage : ContentPage
                 dictView.Add(d);
             }
 
-            Preferences.Set("dictionaries", JsonSerializer.Serialize(dictView));
+            File.WriteAllText(pathToDictionary, JsonSerializer.Serialize(dictView));
 
             OnPropertyChanged();
         }
@@ -37,8 +39,11 @@ public partial class MainPage : ContentPage
         set
         {
             newDictionary = value;
+
             dictView.Add(value);
-            Preferences.Set("dictionaries", JsonSerializer.Serialize(dictView));
+
+            File.WriteAllText(pathToDictionary, JsonSerializer.Serialize(dictView));
+
             OnPropertyChanged();
         }
     }
@@ -49,17 +54,23 @@ public partial class MainPage : ContentPage
 
         BindingContext = this;
 
-        //「次回起動時に初期化」のチェックがされていたなら設定をクリア
+        //「次回起動時に初期化」のチェックがされていたなら辞書と設定をクリア
         var isInitialize = Preferences.Get("initialize_on_next_launch", false);
         if (isInitialize)
         {
             Preferences.Clear();
+
+            if (File.Exists(pathToDictionary))
+            {
+                File.Delete(pathToDictionary);
+            }
         }
 
         //辞書リストをロード
-        if (Preferences.ContainsKey("dictionaries"))
+        if (File.Exists(pathToDictionary))
         {
-            dictView = JsonSerializer.Deserialize<ObservableCollection<DictionaryInfo>>(Preferences.Get("dictionaries", ""));
+            var rawData = File.ReadAllText(pathToDictionary);
+            dictView = JsonSerializer.Deserialize<ObservableCollection<DictionaryInfo>>(rawData);
         }
         else
         {
