@@ -124,7 +124,7 @@ public partial class MainPage : ContentPage
         }
 
         var searchWords = string.Join(separator, words);
-        var targetUriString = dict.BaseUrl + searchWords;
+        var targetUriString = dict.BaseUrl + searchWords + dict.Suffix;
 
         Uri targetUri;
 

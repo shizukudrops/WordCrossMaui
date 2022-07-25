@@ -11,20 +11,16 @@ namespace WordCrossMaui
         public string Name { get; set; }
         public string BaseUrl { get; set; }
         public string Separator { get; set; }
+        public string Suffix { get; set; }
 
         public DictionaryInfo() { }
 
-        public DictionaryInfo(string name, string baseUrl)
-        {
-            Name = name;
-            BaseUrl = baseUrl;
-        }
-
-        public DictionaryInfo(string name, string baseUrl, string separator)
+        public DictionaryInfo(string name, string baseUrl, string separator = "", string suffix = "")
         {
             Name = name;
             BaseUrl = baseUrl;
             Separator = separator;
+            Suffix = suffix;
         }
 
         public override string ToString()

@@ -18,10 +18,12 @@
         <VerticalStackLayout Grid.Column="0" Spacing="10">
             <Label Text="名前"></Label>
             <Entry x:Name="nameBox"></Entry>
-            <Label Text="基礎URL" Margin="0,11,0,0"></Label>
+            <Label Text="基礎URL" Margin="0,10,0,0"></Label>
             <Entry x:Name="urlBox"></Entry>
             <Label Text="セパレーター" Margin="0,10,0,0"></Label>
             <Entry x:Name="separatorBox"></Entry>
+            <Label Text="サフィックス" Margin="0,10,0,0"></Label>
+            <Entry x:Name="suffixBox"></Entry>
 
             <Button Text="追加" Clicked="Add_Clicked" />
             <Button Text="キャンセル" Clicked="Cancel_Clicked" />
@@ -37,6 +39,9 @@
                 <Label Text="セパレーター" FontAttributes="Bold" />
                 <Label Text="成句を検索するときに、オンライン辞書がどのように複数のワードを接続するかを指定します。" />
                 <Label Text="例えば、Collins Thsaurusで「go to bed」を検索すると、検索結果のページのURLは「https://www.collinsdictionary.com/dictionary/english-thesaurus/go-to-bed」となります。「go to bed」が「go-to-bed」に変換されているので、「-」を入力してください。" />
+                <Label Text="空欄の場合は半角スペースで代用されます。" />
+                <Label Text="サフィックス" FontAttributes="Bold" />
+                <Label Text="検索ワードの後ろにもURLが続く場合にはその部分を指定します。ほとんどの場合は不要です。" />
             </VerticalStackLayout>
         </ScrollView>
     </Grid>
