@@ -31,7 +31,7 @@ public partial class MainPage : ContentPage
         }
     }
 
-    DictionaryInfo newDictionary = new DictionaryInfo();
+    DictionaryInfo newDictionary = new DictionaryInfo("", "");
 
     public DictionaryInfo NewDictionary
     {
