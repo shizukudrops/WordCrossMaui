@@ -58,6 +58,7 @@ public partial class MainPage : ContentPage
 
         //「次回起動時に初期化」のチェックがされていたなら辞書と設定をクリア
         var isInitialize = Preferences.Get("initialize_on_next_launch", false);
+
         if (isInitialize)
         {
             Preferences.Clear();
@@ -72,7 +73,13 @@ public partial class MainPage : ContentPage
         if (File.Exists(pathToDictionary))
         {
             var rawData = File.ReadAllText(pathToDictionary);
-            dictView = JsonSerializer.Deserialize<ObservableCollection<DictionaryInfo>>(rawData);
+
+            var deserialized = JsonSerializer.Deserialize<ObservableCollection<DictionaryInfo>>(rawData);
+
+            if(deserialized != null)
+            {
+                dictView = deserialized;
+            }
         }
         else
         {
@@ -128,7 +135,7 @@ public partial class MainPage : ContentPage
         var searchWords = string.Join(separator, words);
         var targetUriString = dict.BaseUrl + searchWords + dict.Suffix;
 
-        Uri targetUri;
+        Uri? targetUri;
 
         if (Uri.TryCreate(targetUriString, UriKind.Absolute, out targetUri))
         {

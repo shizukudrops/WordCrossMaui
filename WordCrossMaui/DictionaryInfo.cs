@@ -8,10 +8,10 @@ namespace WordCrossMaui
 {
     public class DictionaryInfo
     {
-        public string Name { get; set; }
-        public string BaseUrl { get; set; }
-        public string Separator { get; set; }
-        public string Suffix { get; set; }
+        public string Name { get; set; } = "";
+        public string BaseUrl { get; set; } = "";
+        public string Separator { get; set; } = "";
+        public string Suffix { get; set; } = "";
 
         public DictionaryInfo() { }
 
