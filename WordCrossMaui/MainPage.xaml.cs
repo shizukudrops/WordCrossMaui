@@ -17,7 +17,7 @@ public partial class MainPage : ContentPage
         set
         {
             if(value == null) return;
-
+            
             dictView.Clear();
 
             foreach(var d in value)
@@ -38,6 +38,8 @@ public partial class MainPage : ContentPage
         get => newDictionary;
         set
         {
+            if (value == null) return;
+
             newDictionary = value;
 
             dictView.Add(value);

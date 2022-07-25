@@ -12,6 +12,8 @@ public partial class ManageDictionaryPage : ContentPage
         get => dictionaryList;
         set
         {
+            if (value == null) return;
+
             dictionaryList.Clear();
             
             foreach(var d in value)

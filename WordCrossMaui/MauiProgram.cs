@@ -24,7 +24,7 @@ public static class MauiProgram
                             var windowPosX = Preferences.Get("window_pos_x", -1);
 							var windowPosY = Preferences.Get("window_pos_y", -1);
 							var windowWidth = Preferences.Get("window_width", 1024);
-							var windowHeight = Preferences.Get("window_height", 800);
+							var windowHeight = Preferences.Get("window_height", 720);
 
 							if(windowPosX == -1 || windowPosY == -1)
 							{
