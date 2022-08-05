@@ -85,6 +85,7 @@ public partial class MainPage : ContentPage
         {
             dictView.Add(new DictionaryInfo("Longman", "https://www.ldoceonline.com/jp/dictionary/", "-"));
             dictView.Add(new DictionaryInfo("Oxford Learners", "https://www.oxfordlearnersdictionaries.com/definition/english/", "-"));
+            dictView.Add(new DictionaryInfo("Collins English", "https://www.collinsdictionary.com/dictionary/english/", "-"));
             dictView.Add(new DictionaryInfo("Collins Thesaurus", "https://www.collinsdictionary.com/dictionary/english-thesaurus/", "-"));
             dictView.Add(new DictionaryInfo("Merriam Webster", "https://www.merriam-webster.com/dictionary/", "%20"));
             dictView.Add(new DictionaryInfo("英辞郎", "https://eow.alc.co.jp/", "+"));
