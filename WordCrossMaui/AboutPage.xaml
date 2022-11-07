@@ -14,7 +14,7 @@
         <Label x:Name="AppNameLabel" HorizontalOptions="Center" FontSize="Header" />
         <Label x:Name="VersionLabel" HorizontalOptions="Center" FontSize="Medium" />
         <Label x:Name="AuthorLabel"  HorizontalOptions="Center" FontSize="Default" />
-        <Label Text="Icons Powered by: https://icons.theforgesmith.com" />
+        <Label Text="Icons Powered by: https://icons.theforgesmith.com" HorizontalOptions="Center" />
         <Button Text="戻る" Clicked="Return_Clicked" />
         <HorizontalStackLayout Margin="0, 30, 0, 0" HorizontalOptions="Center">
             <CheckBox CheckedChanged="Initialize_CheckedChanged" VerticalOptions="Center" />
