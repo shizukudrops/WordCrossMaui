@@ -3,13 +3,6 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="WordCrossMaui.AddDictionaryPage">
 
-    <ContentPage.Resources>
-        <Style TargetType="Button">
-            <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource Gray900}}" />
-            <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource Primary}}" />
-        </Style>
-    </ContentPage.Resources>
-
     <Grid ColumnSpacing="10" Margin="50, 10, 50, 50" >
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="6*"/>
@@ -19,7 +12,7 @@
         <VerticalStackLayout Grid.Column="0" Spacing="10">
             <Label Text="名前"></Label>
             <Entry x:Name="nameBox"></Entry>
-            <Label Text="基礎URL" Margin="0,10,0,0"></Label>
+            <Label Text="基本URL" Margin="0,10,0,0"></Label>
             <Entry x:Name="urlBox"></Entry>
             <Label Text="セパレーター" Margin="0,10,0,0"></Label>
             <Entry x:Name="separatorBox"></Entry>
@@ -27,6 +20,7 @@
             <Entry x:Name="suffixBox"></Entry>
 
             <Button Text="追加" Clicked="Add_Clicked" />
+            <Button Text="プリセットの辞書から追加" Clicked="Add_From_Preset_Clicked" />
             <Button Text="キャンセル" Clicked="Cancel_Clicked" />
         </VerticalStackLayout>
 
@@ -34,7 +28,7 @@
             <VerticalStackLayout Spacing="10">
                 <Label Text="名前" FontAttributes="Bold" />
                 <Label Text="辞書リストに表示される名前です。分かりやすいものをつけてください。" />
-                <Label Text="基礎URL" FontAttributes="Bold" />
+                <Label Text="基本URL" FontAttributes="Bold" />
                 <Label Text="登録したいオンライン辞書で何か単語を検索し、検索結果ページのURLのうち検索ワードを除外した部分を入力してください。" />
                 <Label Text="例えば、Merriam Websterで「sleepy」を検索すると、検索結果のページのURLは「https://www.merriam-webster.com/dictionary/sleepy」となります。この場合、「https://www.merriam-webster.com/dictionary/」の部分を入力してください。" />
                 <Label Text="セパレーター" FontAttributes="Bold" />

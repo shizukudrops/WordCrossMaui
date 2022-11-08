@@ -2,14 +2,7 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="WordCrossMaui.AboutPage">
-    
-    <ContentPage.Resources>
-        <Style TargetType="Button">
-            <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource Gray900}}" />
-            <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource Primary}}" />
-        </Style>
-    </ContentPage.Resources>
-    
+
     <VerticalStackLayout Margin="50, 10, 50, 50" Spacing="10" HorizontalOptions="Center">
         <Label x:Name="AppNameLabel" HorizontalOptions="Center" FontSize="Header" />
         <Label x:Name="VersionLabel" HorizontalOptions="Center" FontSize="Medium" />

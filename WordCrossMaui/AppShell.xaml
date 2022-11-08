@@ -17,6 +17,11 @@
         Route="AddDictionary" />
 
     <ShellContent
+        Title="プリセットの辞書から追加"
+        ContentTemplate="{DataTemplate local:AddFromPresetPage}"
+        Route="AddFromPreset" />
+
+    <ShellContent
         Title="辞書の管理"
         ContentTemplate="{DataTemplate local:ManageDictionaryPage}"
         Route="ManageDictionary" />
