@@ -12,7 +12,7 @@
                         <VisualState x:Name="Selected">
                             <VisualState.Setters>
                                 <Setter Property="BackgroundColor"
-                                        Value="{StaticResource Blue300Accent}" />
+                                        Value="{AppThemeBinding Light={StaticResource Blue300Accent}, Dark={StaticResource Blue400Accent}}" />
                             </VisualState.Setters>
                         </VisualState>
                     </VisualStateGroup>
@@ -35,7 +35,7 @@
         <CollectionView x:Name="dictList" SelectionMode="Multiple" CanReorderItems="True" EmptyView="辞書が登録されていません" Margin="0, 30, 0, 0" ReorderCompleted="dictList_ReorderCompleted">
             <CollectionView.ItemTemplate>
                 <DataTemplate>
-                    <Grid Margin="15, 0, 4, 0" Padding="8">
+                    <Grid Margin="-24, 0, 4, 0"  Padding="40, 8, 8, 8">
                         <Label Text="{Binding Name}" />
                     </Grid>
                 </DataTemplate>
