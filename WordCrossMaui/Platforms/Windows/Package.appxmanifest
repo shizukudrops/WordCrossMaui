@@ -6,7 +6,7 @@
   xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest"
   IgnorableNamespaces="uap rescap mp">
 
-  <Identity Name="48625Shizukudrops.WordCross" Publisher="CN=BF3B8A9C-2660-4D2F-946E-E2B3021B403D" Version="1.1.8.0" />
+  <Identity Name="48625Shizukudrops.WordCross" Publisher="CN=BF3B8A9C-2660-4D2F-946E-E2B3021B403D" Version="1.2.9.0" />
 
   <Properties>
     <DisplayName>WordCross ウェブ辞書検索ツール</DisplayName>
