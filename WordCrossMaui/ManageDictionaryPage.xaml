@@ -43,7 +43,8 @@
         </CollectionView>
 
         <VerticalStackLayout Grid.Column="1" Spacing="10">
-            <Button Text="削除" Clicked="Remove_Clicked" />
+            <Button Text="選択項目を削除" Clicked="Remove_Clicked" />
+            <Button Text="変更を元に戻す" Clicked="Revert_Clicked" />
             <Button Text="戻る" Clicked="Return_Clicked" />
         </VerticalStackLayout>
     </Grid>

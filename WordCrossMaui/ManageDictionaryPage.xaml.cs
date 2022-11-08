@@ -5,7 +5,9 @@ namespace WordCrossMaui;
 [QueryProperty(nameof(DictionaryList), "DictionaryList")]
 public partial class ManageDictionaryPage : ContentPage
 {
-    ObservableCollection<DictionaryInfo> dictionaryList = new ObservableCollection<DictionaryInfo>();
+    readonly ObservableCollection<DictionaryInfo> dictionaryList = new ObservableCollection<DictionaryInfo>();
+
+    ReadOnlyCollection<DictionaryInfo>? initialDictionaries;
 
     public ObservableCollection<DictionaryInfo> DictionaryList
     {
@@ -13,6 +15,12 @@ public partial class ManageDictionaryPage : ContentPage
         set
         {
             if (value == null) return;
+
+            //最初に値が渡ってきたときのみinitialDictonariesにコピーする（変更の巻き戻し用）
+            if(initialDictionaries == null)
+            {
+                initialDictionaries = new ReadOnlyCollection<DictionaryInfo>(value);
+            }
 
             dictionaryList.Clear();
             
@@ -44,6 +52,18 @@ public partial class ManageDictionaryPage : ContentPage
         foreach(var d in selected)
         {
             dictionaryList.Remove((DictionaryInfo)d);
+        }
+    }
+
+    private void Revert_Clicked(object sender, EventArgs e)
+    {
+        if (initialDictionaries == null) return;
+
+        dictionaryList.Clear();
+
+        foreach(var d in initialDictionaries)
+        {
+            dictionaryList.Add(d);
         }
     }
 
