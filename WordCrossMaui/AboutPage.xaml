@@ -9,10 +9,18 @@
         <Label x:Name="AuthorLabel"  HorizontalOptions="Center" FontSize="Default" />
         <Label Text="Icons Powered by: https://icons.theforgesmith.com" HorizontalOptions="Center" />
         <Button Text="戻る" Clicked="Return_Clicked" />
-        <HorizontalStackLayout Margin="0, 30, 0, 0" HorizontalOptions="Center">
-            <CheckBox CheckedChanged="Initialize_CheckedChanged" VerticalOptions="Center" />
-            <Label Text="次回起動時に初期化" VerticalOptions="Center" />
-        </HorizontalStackLayout>
-        <Label Text="（辞書リストがリセットされます）" HorizontalOptions="Center" Margin="20, 0, 0, 0" />
+
+        <VerticalStackLayout x:Name="debugPanel" Margin="0, 20, 0, 0" Spacing="10"  IsVisible="False">
+            <Border />
+            <Label Text="デバッグ機能" />
+            <HorizontalStackLayout Spacing="10">
+                <HorizontalStackLayout VerticalOptions="Center">
+                    <CheckBox CheckedChanged="Initialize_CheckedChanged" VerticalOptions="Center" />
+                    <Label Text="次回起動時に初期化" VerticalOptions="Center" />
+                </HorizontalStackLayout>
+                <Button Text="アプリディレクトリへのパスをコピー" Clicked="DirButton_Clicked" />
+            </HorizontalStackLayout>
+            
+        </VerticalStackLayout>
     </VerticalStackLayout>
 </ContentPage>

@@ -11,8 +11,12 @@ public partial class AboutPage : ContentPage
 
 		AppNameLabel.Text = name;
 		VersionLabel.Text = version;
-		AuthorLabel.Text = "çÏé“: shizukudrops";
-    }
+		AuthorLabel.Text = "çÏé“: Shizukudrops";
+
+#if DEBUG
+		debugPanel.IsVisible = true;
+#endif
+	}
 
 	private async void Return_Clicked(object sender, EventArgs e)
 	{
@@ -22,5 +26,10 @@ public partial class AboutPage : ContentPage
     void Initialize_CheckedChanged(object sender, CheckedChangedEventArgs e)
     {
 		Preferences.Set("initialize_on_next_launch", e.Value);
+    }
+
+    private async void DirButton_Clicked(object sender, EventArgs e)
+    {
+        await Clipboard.Default.SetTextAsync(FileSystem.AppDataDirectory);
     }
 }
