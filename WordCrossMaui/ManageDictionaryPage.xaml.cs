@@ -29,8 +29,13 @@ public partial class ManageDictionaryPage : ContentPage
 	{
 		InitializeComponent();
 
-        dictList.ItemsSource = DictionaryList;
+        dictList.ItemsSource = DictionaryList;        
 	}
+
+    private void dictList_ReorderCompleted(object sender, EventArgs e)
+    {
+        dictList.SelectedItems = null;
+    }
 
     private void Remove_Clicked(object sender, EventArgs e)
     {

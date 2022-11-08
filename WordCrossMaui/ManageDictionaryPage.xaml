@@ -32,7 +32,7 @@
         </Grid.ColumnDefinitions>
 
         <Label Text="複数選択可／ドラッグで並べ替え" />
-        <CollectionView x:Name="dictList" SelectionMode="Multiple" CanReorderItems="True" EmptyView="辞書が登録されていません" Margin="0, 30, 0, 0">
+        <CollectionView x:Name="dictList" SelectionMode="Multiple" CanReorderItems="True" EmptyView="辞書が登録されていません" Margin="0, 30, 0, 0" ReorderCompleted="dictList_ReorderCompleted">
             <CollectionView.ItemTemplate>
                 <DataTemplate>
                     <Grid Margin="15, 0, 4, 0" Padding="8">
