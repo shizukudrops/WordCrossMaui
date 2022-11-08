@@ -9,23 +9,23 @@ public partial class MainPage : ContentPage
 {
     readonly string pathToDictionary = Path.Join(FileSystem.AppDataDirectory, "dic");
 
-    ObservableCollection<DictionaryInfo> dictView = new ObservableCollection<DictionaryInfo>();
+    readonly ObservableCollection<DictionaryInfo> _dictView = new ObservableCollection<DictionaryInfo>();
 
     public ObservableCollection<DictionaryInfo> DictView
     {
-        get => dictView;
+        get => _dictView;
         set
         {
             if(value == null) return;
             
-            dictView.Clear();
+            _dictView.Clear();
 
             foreach(var d in value)
             {
-                dictView.Add(d);
+                _dictView.Add(d);
             }
 
-            File.WriteAllText(pathToDictionary, JsonSerializer.Serialize(dictView));
+            File.WriteAllText(pathToDictionary, JsonSerializer.Serialize(_dictView));
 
             OnPropertyChanged();
         }
@@ -38,14 +38,7 @@ public partial class MainPage : ContentPage
         {
             if (value == null) return;
 
-            foreach(var d in value)
-            {
-                dictView.Add(d);
-            }
-
-            File.WriteAllText(pathToDictionary, JsonSerializer.Serialize(dictView));
-
-            OnPropertyChanged();
+            DictView = new ObservableCollection<DictionaryInfo>(DictView.Concat(value));
         }
     }
     
@@ -77,15 +70,15 @@ public partial class MainPage : ContentPage
 
             if(deserialized != null)
             {
-                dictView = deserialized;
+                DictView = deserialized;
             }
         }
         else
         {
-            dictView = new ObservableCollection<DictionaryInfo>(PresetDictionaries.DictionaryList.Where(d => d.IsDefault));
+            DictView = new ObservableCollection<DictionaryInfo>(PresetDictionaries.DictionaryList.Where(d => d.IsDefault));
         }
 
-        dictList.ItemsSource = dictView;
+        dictList.ItemsSource = DictView;
     }
 
     private void Search(DictionaryInfo dict, string input)
@@ -93,7 +86,7 @@ public partial class MainPage : ContentPage
         //どの辞書も選ばれていなかったら一番上の辞書で検索する。辞書が存在しなければ戻る。
         if (dict == null)
         {
-            if (dictView.Count > 0) dict = dictView.First();
+            if (DictView.Count > 0) dict = DictView.First();
             else return;
         }
 
@@ -160,7 +153,7 @@ public partial class MainPage : ContentPage
     {
         var param = new Dictionary<string, object>
         {
-            {"CurrentDictView", dictView}
+            {"CurrentDictView", DictView}
         };
 
         await Shell.Current.GoToAsync("///ManageDictionary", param);
