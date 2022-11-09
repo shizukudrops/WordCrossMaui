@@ -20,14 +20,32 @@ public partial class AboutPage : ContentPage
 #endif
 	}
 
-    void OnDropboxSyncToggled(object sender, ToggledEventArgs e)
+    async void OnDropboxSyncToggled(object sender, ToggledEventArgs e)
     {
         Preferences.Set("sync_with_dropbox", e.Value);
 
         if (e.Value)
         {
-            var client = new DropboxInterlop();
-            var result = client.Run();
+            if (string.IsNullOrEmpty(Preferences.Get("dropbox_access_token", "")))
+            {
+                var client = new DropboxInterlop();
+
+                if (await client.Authenticate())
+                {
+                    await client.Download();
+                    await client.Upload();
+                }
+                else
+                {
+                    await DisplayAlert("ÉGÉâÅ[", "DropboxÇ∆ÇÃê⁄ë±Ç…é∏îsÇµÇ‹ÇµÇΩ", "OK");
+                    dropboxSyncSwitch.IsToggled = false;
+                }
+            }                
+        }
+        else
+        {
+            Preferences.Default.Remove("dropbox_access_token");
+            Preferences.Default.Remove("dropbox_refresh_token");
         }
     }
 
