@@ -59,6 +59,10 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <PackageReference Include="Dropbox.Api" Version="6.33.0" />
+	</ItemGroup>
+
+	<ItemGroup>
 	  <MauiXaml Update="AboutPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>

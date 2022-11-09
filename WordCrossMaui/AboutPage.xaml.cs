@@ -6,6 +6,8 @@ public partial class AboutPage : ContentPage
 	{
 		InitializeComponent();
 
+        dropboxSyncSwitch.IsToggled = Preferences.Get("sync_with_dropbox", false);
+
         string name = AppInfo.Current.Name;
         string version = AppInfo.Current.VersionString;
 
@@ -18,7 +20,18 @@ public partial class AboutPage : ContentPage
 #endif
 	}
 
-	private async void Return_Clicked(object sender, EventArgs e)
+    void OnDropboxSyncToggled(object sender, ToggledEventArgs e)
+    {
+        Preferences.Set("sync_with_dropbox", e.Value);
+
+        if (e.Value)
+        {
+            var client = new DropboxInterlop();
+            var result = client.Run();
+        }
+    }
+
+    private async void Return_Clicked(object sender, EventArgs e)
 	{
 		await Shell.Current.GoToAsync("///Main");
 	}

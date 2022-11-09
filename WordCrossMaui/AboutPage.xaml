@@ -4,11 +4,18 @@
              x:Class="WordCrossMaui.AboutPage">
 
     <VerticalStackLayout Margin="50, 10, 50, 50" Spacing="10" HorizontalOptions="Center">
-        <Label x:Name="AppNameLabel" HorizontalOptions="Center" FontSize="Header" />
-        <Label x:Name="VersionLabel" HorizontalOptions="Center" FontSize="Medium" />
-        <Label x:Name="AuthorLabel"  HorizontalOptions="Center" FontSize="Default" />
-        <Label Text="Icons Powered by: https://icons.theforgesmith.com" HorizontalOptions="Center" />
-        <Button Text="戻る" Clicked="Return_Clicked" />
+        <HorizontalStackLayout Spacing="10" HorizontalOptions="Center">
+            <Label Text="Dropboxで辞書リストを同期" VerticalOptions="Center" />
+            <Switch x:Name="dropboxSyncSwitch" VerticalOptions="Center" Toggled="OnDropboxSyncToggled" />
+        </HorizontalStackLayout>
+
+        <VerticalStackLayout Margin="0, 20, 0, 0" Spacing="10">
+            <Label x:Name="AppNameLabel" HorizontalOptions="Center" FontSize="Medium" />
+            <Label x:Name="VersionLabel" HorizontalOptions="Center" FontSize="Default" />
+            <Label x:Name="AuthorLabel"  HorizontalOptions="Center" FontSize="Default" />
+            <Label Text="Icons Powered by: https://icons.theforgesmith.com" HorizontalOptions="Center" />
+            <Button Text="戻る" Clicked="Return_Clicked" />
+        </VerticalStackLayout>
 
         <VerticalStackLayout x:Name="debugPanel" Margin="0, 20, 0, 0" Spacing="10"  IsVisible="False">
             <Border />

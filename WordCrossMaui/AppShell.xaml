@@ -27,7 +27,7 @@
         Route="ManageDictionary" />
 
     <ShellContent
-        Title="このアプリについて"
+        Title="設定"
         ContentTemplate="{DataTemplate local:AboutPage}"
         Route="About"/>
 
