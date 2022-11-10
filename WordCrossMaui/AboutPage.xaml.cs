@@ -1,8 +1,16 @@
+using System.Collections.ObjectModel;
+using System.Runtime.CompilerServices;
+using System.Text.Json;
+
 namespace WordCrossMaui;
 
+[QueryProperty(nameof(ReceivedDictView), "CurrentDictView")]
 public partial class AboutPage : ContentPage
 {
-	public AboutPage()
+    public ObservableCollection<DictionaryInfo> ReceivedDictView { get; set; } = new ObservableCollection<DictionaryInfo>();
+    public ObservableCollection<DictionaryInfo>? UpdatedDictView { get; set; }
+
+    public AboutPage()
 	{
 		InitializeComponent();
 
@@ -25,22 +33,25 @@ public partial class AboutPage : ContentPage
         Preferences.Set("sync_with_dropbox", e.Value);
 
         if (e.Value)
-        {
+        {  
+            var client = new DropboxInterop();
+
+            //アクセスキーがすでにあるか
             if (string.IsNullOrEmpty(Preferences.Get("dropbox_access_token", "")))
             {
-                var client = new DropboxInterop();
-
+                //アクセスキーがなければまず認証する
                 if (await client.Authenticate())
                 {
-                    await client.Download();
-                    await client.Upload();
+                    //認証成功の場合、同期
+                    await SyncDictionaryWithDropbox(client);
                 }
                 else
                 {
+                    //認証失敗の場合
                     await DisplayAlert("エラー", "Dropboxとの接続に失敗しました", "OK");
                     dropboxSyncSwitch.IsToggled = false;
                 }
-            }                
+            }
         }
         else
         {
@@ -51,7 +62,20 @@ public partial class AboutPage : ContentPage
 
     private async void Return_Clicked(object sender, EventArgs e)
 	{
-		await Shell.Current.GoToAsync("///Main");
+        if(UpdatedDictView!= null)
+        {
+            var param = new Dictionary<string, object>
+        {
+            {"UpdatedDictView",  new ObservableCollection<DictionaryInfo>(UpdatedDictView)}
+        };
+
+            await Shell.Current.GoToAsync("///Main", param);
+            UpdatedDictView= null;
+        }
+        else
+        {
+            await Shell.Current.GoToAsync("///Main");
+        }
 	}
 
     void Initialize_CheckedChanged(object sender, CheckedChangedEventArgs e)
@@ -62,5 +86,39 @@ public partial class AboutPage : ContentPage
     private async void DirButton_Clicked(object sender, EventArgs e)
     {
         await Clipboard.Default.SetTextAsync(FileSystem.AppDataDirectory);
+    }
+
+    private async Task<bool> SyncDictionaryWithDropbox(DropboxInterop client)
+    {
+        //辞書が存在するか確認
+        if (!await client.IsFileExist("", "dic"))
+        {
+            //存在しなければアップロードする
+            await client.Upload("/dic", JsonSerializer.Serialize(ReceivedDictView));
+        }
+        else
+        {
+            //クラウドに辞書が存在する場合、クラウドとローカルのどちらを取るか確認
+            if (await DisplayAlert("確認", "すでにクラウドに辞書リストが存在します。クラウドのデータで現在のリストを置き換えますか？", "はい、置き換えます", "いいえ、ローカルを保持します"))
+            {
+                //「はい」ならクラウドからダウンロード
+                var dic = await client.Download("/dic");
+                if (dic != null)
+                {
+                    var deserialized = JsonSerializer.Deserialize<ObservableCollection<DictionaryInfo>>(dic);
+                    if (deserialized != null)
+                    {
+                        UpdatedDictView = deserialized;
+                    }
+                }
+            }
+            else
+            {
+                //「いいえ」ならローカルをアップロード
+                await client.Upload("/dic", JsonSerializer.Serialize(ReceivedDictView));
+            }
+        }
+
+        return true;
     }
 }

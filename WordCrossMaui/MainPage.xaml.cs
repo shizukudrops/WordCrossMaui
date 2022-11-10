@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Text.Json;
 
 namespace WordCrossMaui;
@@ -26,6 +27,11 @@ public partial class MainPage : ContentPage
             }
 
             File.WriteAllText(pathToDictionary, JsonSerializer.Serialize(_dictView));
+
+            if (Preferences.Get("sync_with_dropbox", false))
+            {
+                SyncWithDropbox();
+            }
 
             OnPropertyChanged();
         }
@@ -161,7 +167,61 @@ public partial class MainPage : ContentPage
 
     private async void About_Clicked(object sender, EventArgs e)
     {
-        await Shell.Current.GoToAsync("///About");
+        var param = new Dictionary<string, object>
+        {
+            {"CurrentDictView", DictView}
+        };
+
+        await Shell.Current.GoToAsync("///About", param);
+    }
+
+    private async Task SyncWithDropbox()
+    {
+        try
+        {
+            var client = new DropboxInterop();
+
+            //辞書が存在するか確認
+            if (!await client.IsFileExist("", "dic"))
+            {
+                //存在しなければアップロードする
+                await client.Upload("/dic", JsonSerializer.Serialize(DictView));
+            }
+            else
+            {
+                if (Preferences.Get("is_sync_successful", false))
+                {
+                    await client.Upload("/dic", JsonSerializer.Serialize(DictView));
+                }
+                else
+                {
+                    if (await DisplayAlert("確認", "クラウドに別のバージョンの辞書リストが存在します。クラウドのデータで現在のリストを置き換えますか？", "はい、置き換えます", "いいえ、ローカルを保持します"))
+                    {
+                        //「はい」ならクラウドからダウンロード
+                        var dic = await client.Download("/dic");
+                        if (dic != null)
+                        {
+                            var deserialized = JsonSerializer.Deserialize<ObservableCollection<DictionaryInfo>>(dic);
+                            if (deserialized != null)
+                            {
+                                DictView = deserialized;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        //「いいえ」ならローカルをアップロード
+                        await client.Upload("/dic", JsonSerializer.Serialize(DictView));
+                    }
+                }
+            }
+            Preferences.Default.Set("is_sync_successful", true);
+        }
+        catch(Exception e)
+        {
+            Debug.Write(e);
+            Preferences.Default.Set("is_sync_successful", false);
+        }
     }
 }
 

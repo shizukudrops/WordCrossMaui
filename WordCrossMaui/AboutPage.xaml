@@ -14,7 +14,7 @@
             <Label x:Name="VersionLabel" HorizontalOptions="Center" FontSize="Default" />
             <Label x:Name="AuthorLabel"  HorizontalOptions="Center" FontSize="Default" />
             <Label Text="Icons Powered by: https://icons.theforgesmith.com" HorizontalOptions="Center" />
-            <Button Text="戻る" Clicked="Return_Clicked" />
+            <Button x:Name="returnButton" Text="戻る" Clicked="Return_Clicked" />
         </VerticalStackLayout>
 
         <VerticalStackLayout x:Name="debugPanel" Margin="0, 20, 0, 0" Spacing="10"  IsVisible="False">

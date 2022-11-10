@@ -8,7 +8,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Diagnostics;
 using Dropbox.Api.Files;
-using static Dropbox.Api.Files.SearchMatchTypeV2;
 
 namespace WordCrossMaui
 {
@@ -29,7 +28,7 @@ namespace WordCrossMaui
         private readonly Uri RedirectUri = new Uri(LoopbackHost + "authorize");
 
         // URL to receive access token from JS.
-        private readonly Uri JSRedirectUri = new Uri(LoopbackHost + "token");
+        private readonly Uri SecondaryRedirectUri = new Uri(LoopbackHost + "token");
 
         public DropboxInterop() 
         {
@@ -43,7 +42,7 @@ namespace WordCrossMaui
             return !string.IsNullOrEmpty(await AcquireAccessToken(scopeList, IncludeGrantedScopes.None));
         }
 
-        public async Task<bool> Download()
+        public async Task<bool> IsFileExist(string path, string fileName)
         {
             try
             {
@@ -52,14 +51,25 @@ namespace WordCrossMaui
 
                 var config = new DropboxClientConfig("WordCross");
 
-                var client = new DropboxClient(accessToken, refreshToken, ApiKey, ApiSecret, config);
-                
-                using (var response = await client.Files.DownloadAsync("/test.txt"))
+                using (var client = new DropboxClient(accessToken, refreshToken, ApiKey, ApiSecret, config))
                 {
-                    Debug.WriteLine($"Downloaded {response.Response.Name} Rev {response.Response.Rev}");
-                    Debug.WriteLine("------------------------------");
-                    Debug.WriteLine(await response.GetContentAsStringAsync());
-                    Debug.WriteLine("------------------------------");
+                    var list = await client.Files.ListFolderAsync(path);
+
+                    foreach (var item in list.Entries.Where(i => i.IsFile))
+                    {
+                        var file = item.AsFile;
+
+                        if(file.Name == fileName)
+                        {
+                            return true;
+                        }
+                        else
+                        {
+                            continue;
+                        }
+                    }
+
+                    return false;
                 }
             }
             catch (HttpException e)
@@ -75,12 +85,12 @@ namespace WordCrossMaui
 
                 return false;
             }
-
-            return true;
         }
 
-        public async Task<bool> Upload()
+        public async Task<string?> Download(string path)
         {
+            if (string.IsNullOrWhiteSpace(path)) return null;
+
             try
             {
                 var accessToken = Preferences.Get("dropbox_access_token", null);
@@ -88,14 +98,54 @@ namespace WordCrossMaui
 
                 var config = new DropboxClientConfig("WordCross");
 
-                var client = new DropboxClient(accessToken, refreshToken, ApiKey, ApiSecret, config);
-
-                using (var stream = new MemoryStream(UTF8Encoding.UTF8.GetBytes("helloworld")))
+                using (var client = new DropboxClient(accessToken, refreshToken, ApiKey, ApiSecret, config))
                 {
-                    var response = await client.Files.UploadAsync("/testup.txt", WriteMode.Overwrite.Instance, body: stream);
+                    var response = await client.Files.DownloadAsync(path);                
+                    var content = await response.GetContentAsStringAsync();
+
+                    Debug.WriteLine($"Downloaded {response.Response.Name} Rev {response.Response.Rev}");
+                    Debug.WriteLine("------------------------------");
+                    Debug.WriteLine(content);
+                    Debug.WriteLine("------------------------------");
+
+                    return content;
+                }
+            }
+            catch (HttpException e)
+            {
+                Debug.WriteLine("Exception reported from RPC layer");
+                Debug.WriteLine($"    Status code: {e.StatusCode}");
+                Debug.WriteLine($"    Message    : {e.Message}");
+
+                if (e.RequestUri != null)
+                {
+                    Debug.WriteLine($"    Request uri: {e.RequestUri}");
+                }
+
+                return null;
+            }
+        }
+
+        public async Task<bool> Upload(string path, string content)
+        {
+            if (string.IsNullOrWhiteSpace(path)) return false;
+
+            try
+            {
+                var accessToken = Preferences.Get("dropbox_access_token", null);
+                var refreshToken = Preferences.Get("dropbox_refresh_token", null);
+
+                var config = new DropboxClientConfig("WordCross");
+
+                using (var client = new DropboxClient(accessToken, refreshToken, ApiKey, ApiSecret, config))
+                using (var stream = new MemoryStream(UTF8Encoding.UTF8.GetBytes(content)))
+                {
+                    var response = await client.Files.UploadAsync(path, WriteMode.Overwrite.Instance, body: stream);
 
                     Debug.WriteLine($"Uploaded Id {response.Id} Rev {response.Rev}");
                 }
+
+                return true;
             }
             catch (HttpException e)
             {
@@ -110,58 +160,6 @@ namespace WordCrossMaui
 
                 return false;
             }
-
-            return true;
-        }
-
-        /// <summary>
-        /// Handles the redirect from Dropbox server. Because we are using token flow, the local
-        /// http server cannot directly receive the URL fragment. We need to return a HTML page with
-        /// inline JS which can send URL fragment to local server as URL parameter.
-        /// </summary>
-        /// <param name="http">The http listener.</param>
-        /// <returns>The <see cref="Task"/></returns>
-        private async Task HandleOAuth2Redirect(HttpListener http)
-        {
-            var context = await http.GetContextAsync();
-
-            // We only care about request to RedirectUri endpoint.
-            while (context.Request.Url.AbsolutePath != RedirectUri.AbsolutePath)
-            {
-                context = await http.GetContextAsync();
-            }
-
-            context.Response.ContentType = "text/html";
-
-            // Respond with a page which runs JS and sends URL fragment as query string
-            // to TokenRedirectUri.
-            using (var file = await FileSystem.OpenAppPackageFileAsync("OAuthRedirect.html"))
-            {
-                file.CopyTo(context.Response.OutputStream);
-            }
-
-            context.Response.OutputStream.Close();
-        }
-
-        /// <summary>
-        /// Handle the redirect from JS and process raw redirect URI with fragment to
-        /// complete the authorization flow.
-        /// </summary>
-        /// <param name="http">The http listener.</param>
-        /// <returns>The <see cref="OAuth2Response"/></returns>
-        private async Task<Uri> HandleJSRedirect(HttpListener http)
-        {
-            var context = await http.GetContextAsync();
-
-            // We only care about request to TokenRedirectUri endpoint.
-            while (context.Request.Url.AbsolutePath != JSRedirectUri.AbsolutePath)
-            {
-                context = await http.GetContextAsync();
-            }
-
-            var redirectUri = new Uri(context.Request.QueryString["url_with_fragment"]);
-
-            return redirectUri;
         }
 
         /// <summary>
@@ -173,28 +171,64 @@ namespace WordCrossMaui
         /// </para>
         /// </summary>
         /// <returns>A valid uid if a token was acquired or null.</returns>
-        private async Task<string> AcquireAccessToken(string[] scopeList, IncludeGrantedScopes includeGrantedScopes)
+        private async Task<string?> AcquireAccessToken(string[] scopeList, IncludeGrantedScopes includeGrantedScopes)
         {
+            var state = Guid.NewGuid().ToString("N");
+
+            var authorizeUri = DropboxOAuth2Helper.GetAuthorizeUri(OAuthResponseType.Code, ApiKey, RedirectUri, state: state, tokenAccessType: TokenAccessType.Offline, scopeList: scopeList, includeGrantedScopes: includeGrantedScopes);
+            
+            Debug.WriteLine("Waiting for credentials.");
+
+            var listener = new HttpListener();
+
+            listener.Prefixes.Add(LoopbackHost);
+
             try
-            {
-                Debug.WriteLine("Waiting for credentials.");
-                var state = Guid.NewGuid().ToString("N");
-
-                var authorizeUri = DropboxOAuth2Helper.GetAuthorizeUri(OAuthResponseType.Code, ApiKey, RedirectUri, state: state, tokenAccessType: TokenAccessType.Offline, scopeList: scopeList, includeGrantedScopes: includeGrantedScopes);
-                    
-                var http = new HttpListener();
-                    
-                http.Prefixes.Add(LoopbackHost);
-
-                http.Start();
+            {           
+                listener.Start();
 
                 await Browser.Default.OpenAsync(authorizeUri, BrowserLaunchMode.SystemPreferred);
 
-                // Handle OAuth redirect and send URL fragment to local server using JS.
-                await HandleOAuth2Redirect(http);
+                /****** Handle OAuth redirect and send URL fragment to local server using JS. ******/
 
-                // Handle redirect from JS and process OAuth response.
-                var redirectUri = await HandleJSRedirect(http);
+                var primaryContext = await listener.GetContextAsync();
+
+                while (primaryContext.Request.Url.AbsolutePath != RedirectUri.AbsolutePath)
+                {
+                    primaryContext = await listener.GetContextAsync();
+                }
+
+                primaryContext.Response.ContentType = "text/html";
+
+                // Respond with a page which runs JS and sends URL fragment as query string
+                // to TokenRedirectUri.
+                using (var file = await FileSystem.OpenAppPackageFileAsync("OAuthRedirect.html"))
+                {
+                    file.CopyTo(primaryContext.Response.OutputStream);
+                    primaryContext.Response.OutputStream.Close();
+                }
+
+                /****** Handle redirect from JS and process OAuth response. ******/
+
+                var secondaryContext = await listener.GetContextAsync();
+
+                while (secondaryContext.Request.Url.AbsolutePath != SecondaryRedirectUri.AbsolutePath)
+                {
+                    secondaryContext = await listener.GetContextAsync();
+                }
+
+                var redirectUri = new Uri(secondaryContext.Request.QueryString["url_with_fragment"]);
+
+                secondaryContext.Response.ContentType = "text/html";
+
+                //アプリケーションに戻るよう表示
+                using (var file = await FileSystem.OpenAppPackageFileAsync("OAuthSuccess.html"))
+                {
+                    file.CopyTo(secondaryContext.Response.OutputStream);
+                    secondaryContext.Response.OutputStream.Close();
+                }
+
+                /****** Retrieve Tokens ******/
 
                 Debug.WriteLine("Exchanging code for token");
 
@@ -202,17 +236,13 @@ namespace WordCrossMaui
 
                 Debug.WriteLine("Finished Exchanging Code for Token");
 
-                var accessToken = tokenResult.AccessToken;
-                var refreshToken = tokenResult.RefreshToken;
+                //トークンを保存
+                Preferences.Default.Set("dropbox_access_token", tokenResult.AccessToken);
 
-                if (tokenResult.RefreshToken != null)
+                if (!string.IsNullOrEmpty(tokenResult.RefreshToken))
                 {
-                    Preferences.Default.Set("dropbox_refresh_token", refreshToken);
-                }
-
-                Preferences.Default.Set("dropbox_access_token", accessToken);
-
-                http.Stop();
+                    Preferences.Default.Set("dropbox_refresh_token", tokenResult.RefreshToken);
+                }    
 
                 return tokenResult.Uid;
             }
@@ -220,6 +250,11 @@ namespace WordCrossMaui
             {
                 Debug.WriteLine($"Error: {e.Message}");
                 return null;
+            }
+            finally
+            {
+                listener.Stop();
+                listener.Close();
             }
         }
     }
