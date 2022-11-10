@@ -28,7 +28,7 @@ public partial class AboutPage : ContentPage
         {
             if (string.IsNullOrEmpty(Preferences.Get("dropbox_access_token", "")))
             {
-                var client = new DropboxInterlop();
+                var client = new DropboxInterop();
 
                 if (await client.Authenticate())
                 {

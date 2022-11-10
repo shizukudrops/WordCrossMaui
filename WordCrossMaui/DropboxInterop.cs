@@ -12,7 +12,7 @@ using static Dropbox.Api.Files.SearchMatchTypeV2;
 
 namespace WordCrossMaui
 {
-    internal class DropboxInterlop
+    internal class DropboxInterop
     {
         // Add an ApiKey (from https://www.dropbox.com/developers/apps) here
         private readonly string ApiKey = Keys.DropboxApiKey;
@@ -31,7 +31,7 @@ namespace WordCrossMaui
         // URL to receive access token from JS.
         private readonly Uri JSRedirectUri = new Uri(LoopbackHost + "token");
 
-        public DropboxInterlop() 
+        public DropboxInterop() 
         {
             DropboxCertHelper.InitializeCertPinning();
         }
