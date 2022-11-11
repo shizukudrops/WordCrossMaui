@@ -2,6 +2,14 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="WordCrossMaui.MainPage">
+    
+    <ContentPage.Resources>
+        <Style TargetType="Button">
+            <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource Gray900}}" />
+            <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource Gray50}, Dark={StaticResource Gray100}}" />
+        </Style>
+    </ContentPage.Resources>
+    
     <Shell.TitleView>
         <Grid ColumnSpacing="5">
             <Grid.ColumnDefinitions>
@@ -13,8 +21,8 @@
             <Entry x:Name="searchBox" Completed="SearchBox_Completed" ClearButtonVisibility="WhileEditing" Placeholder="検索ワードを入力してエンター" />
 
             <HorizontalStackLayout Grid.Column="1" Spacing="5">
-                <ImageButton Source="back.png" HeightRequest="45" Padding="10" Clicked="Back_Clicked" />
-                <ImageButton Source="forward.png" HeightRequest="45" Padding="10" Clicked="Forward_Clicked"/>
+                <ImageButton x:Name="backButton" Source="back.png" HeightRequest="45" Padding="10" Clicked="Back_Clicked" IsEnabled="False" />
+                <ImageButton x:Name="forwardButton" Source="forward.png" HeightRequest="45" Padding="10" Clicked="Forward_Clicked" IsEnabled="False" />
                 <Button ImageSource="add.png" Text="辞書を追加" FontSize="11" HeightRequest="45" Clicked="AddDictionary_Clicked" />
                 <Button ImageSource="manage.png" Text="辞書の管理" FontSize="11" HeightRequest="45" Clicked="ManageDictionary_Clicked" />
             </HorizontalStackLayout>

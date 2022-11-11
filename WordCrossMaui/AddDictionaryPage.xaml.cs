@@ -19,18 +19,25 @@ public partial class AddDictionaryPage : ContentPage
         //—LŒø‚ÈURI‚©‚ğ”»’è
         if (!Uri.IsWellFormedUriString(urlBox.Text, UriKind.Absolute))
         {
-            await DisplayAlert("–³Œø‚ÈURL‚Å‚·", "³‚µ‚¢URL‚ğ“ü—Í‚µ‚Ä‚­‚¾‚³‚¢", "OK");
+            await DisplayAlert("–³Œø‚ÈURL‚Å‚·", "³‚µ‚¢Šî–{URL‚ğ“ü—Í‚µ‚Ä‚­‚¾‚³‚¢", "OK");
             return;
         }
 
         var param = new Dictionary<string, object>
         {
-            {"NewDictionary",  new DictionaryInfo(nameBox.Text, urlBox.Text, separatorBox.Text, suffixBox.Text)}
+            {"NewDictionaries",  new List<DictionaryInfo>{ new DictionaryInfo(nameBox.Text, urlBox.Text, separatorBox.Text, suffixBox.Text) } }
         };
 
         ClearTextBox();
 
         await Shell.Current.GoToAsync("///Main", param);
+    }
+
+    private async void Add_From_Preset_Clicked(object sender, EventArgs e)
+    {
+        ClearTextBox();
+
+        await Shell.Current.GoToAsync("///AddFromPreset");
     }
 
     private async void Cancel_Clicked(object sender, EventArgs e)

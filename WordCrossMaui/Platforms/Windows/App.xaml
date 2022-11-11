@@ -5,4 +5,15 @@
     xmlns:maui="using:Microsoft.Maui"
     xmlns:local="using:WordCrossMaui.WinUI">
 
+    <maui:MauiWinUIApplication.Resources>
+        <ResourceDictionary>
+            <!-- Override ToggleSwitch : Turn off ON/OFF label -->
+            <Style TargetType="ToggleSwitch">
+                <Setter Property="OffContent" Value=" " />
+                <Setter Property="OnContent" Value=" " />
+                <Setter Property="Margin" Value="0,0,-110,0" />
+            </Style>
+        </ResourceDictionary>
+    </maui:MauiWinUIApplication.Resources>
+
 </maui:MauiWinUIApplication>

@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="WordCrossMaui.ManageDictionaryPage">
-
+             x:Class="WordCrossMaui.AddFromPresetPage"
+             Title="プリセットの辞書から追加">
+    
     <ContentPage.Resources>
         <Style TargetType="Grid">
             <Setter Property="VisualStateManager.VisualStateGroups">
@@ -27,8 +28,8 @@
             <ColumnDefinition Width="2*"/>
         </Grid.ColumnDefinitions>
 
-        <Label Text="複数選択可／ドラッグで並べ替え" />
-        <CollectionView x:Name="dictList" SelectionMode="Multiple" CanReorderItems="True" EmptyView="辞書が登録されていません" Margin="0, 30, 0, 0" ReorderCompleted="dictList_ReorderCompleted">
+        <Label Text="複数選択可" />
+        <CollectionView x:Name="dictList" SelectionMode="Multiple" EmptyView="辞書が登録されていません" Margin="0, 30, 0, 0" >
             <CollectionView.ItemTemplate>
                 <DataTemplate>
                     <Grid Margin="-24, 0, 4, 0"  Padding="40, 8, 8, 8">
@@ -39,10 +40,9 @@
         </CollectionView>
 
         <VerticalStackLayout Grid.Column="1" Spacing="10">
-            <Button Text="選択項目を削除" Clicked="Remove_Clicked" />
-            <Button Text="変更を元に戻す" Clicked="Revert_Clicked" />
+            <Button Text="選択項目を追加" Clicked="Add_Clicked" />
             <Button Text="戻る" Clicked="Return_Clicked" />
         </VerticalStackLayout>
     </Grid>
-
+    
 </ContentPage>

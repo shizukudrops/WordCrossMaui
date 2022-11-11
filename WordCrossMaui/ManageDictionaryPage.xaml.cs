@@ -2,17 +2,22 @@ using System.Collections.ObjectModel;
 
 namespace WordCrossMaui;
 
-[QueryProperty(nameof(DictionaryList), "DictionaryList")]
+[QueryProperty(nameof(ReceivedDictView), "CurrentDictView")]
 public partial class ManageDictionaryPage : ContentPage
 {
-    ObservableCollection<DictionaryInfo> dictionaryList = new ObservableCollection<DictionaryInfo>();
+    readonly ObservableCollection<DictionaryInfo> dictionaryList = new ObservableCollection<DictionaryInfo>();
 
-    public ObservableCollection<DictionaryInfo> DictionaryList
+    ReadOnlyCollection<DictionaryInfo>? initialDictionaries;
+
+    //クエリ受信用
+    public ObservableCollection<DictionaryInfo> ReceivedDictView
     {
-        get => dictionaryList;
         set
         {
             if (value == null) return;
+
+            //値が渡ってきたときにinitialDictonariesにコピーする（変更の巻き戻し用）
+            initialDictionaries = new ReadOnlyCollection<DictionaryInfo>(value.ToList());
 
             dictionaryList.Clear();
             
@@ -29,8 +34,13 @@ public partial class ManageDictionaryPage : ContentPage
 	{
 		InitializeComponent();
 
-        dictList.ItemsSource = DictionaryList;
+        dictList.ItemsSource = dictionaryList;        
 	}
+
+    private void dictList_ReorderCompleted(object sender, EventArgs e)
+    {
+        dictList.SelectedItems = null;
+    }
 
     private void Remove_Clicked(object sender, EventArgs e)
     {
@@ -42,11 +52,23 @@ public partial class ManageDictionaryPage : ContentPage
         }
     }
 
+    private void Revert_Clicked(object sender, EventArgs e)
+    {
+        if (initialDictionaries == null) return;
+
+        dictionaryList.Clear();
+
+        foreach(var d in initialDictionaries)
+        {
+            dictionaryList.Add(d);
+        }
+    }
+
     private async void Return_Clicked(object sender, EventArgs e)
     {
         var param = new Dictionary<string, object>
         {
-            {"UpdatedDictionaryList",  dictionaryList}
+            {"UpdatedDictView",  dictionaryList}
         };
 
         await Shell.Current.GoToAsync("///Main", param);
