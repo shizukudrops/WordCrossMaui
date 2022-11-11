@@ -10,6 +10,11 @@ public partial class MainPage : ContentPage
 {
     readonly string pathToDictionary = Path.Join(FileSystem.AppDataDirectory, "dic");
 
+    readonly Stack<Uri> backStack = new Stack<Uri>();
+    readonly Stack<Uri> forwardStack = new Stack<Uri>();
+
+    public Uri? CurrentWebViewSource { get; set; }
+
     readonly ObservableCollection<DictionaryInfo> _dictView = new ObservableCollection<DictionaryInfo>();
 
     public ObservableCollection<DictionaryInfo> DictView
@@ -87,7 +92,7 @@ public partial class MainPage : ContentPage
         dictList.ItemsSource = DictView;
     }
 
-    private void Search(DictionaryInfo dict, string input)
+    private async void Search(DictionaryInfo dict, string input)
     {
         //どの辞書も選ばれていなかったら一番上の辞書で検索する。辞書が存在しなければ戻る。
         if (dict == null)
@@ -126,7 +131,20 @@ public partial class MainPage : ContentPage
 
         if (Uri.TryCreate(targetUriString, UriKind.Absolute, out targetUri))
         {
+            if (CurrentWebViewSource != null)
+            {
+                backStack.Push(CurrentWebViewSource);
+                backButton.IsEnabled = true;
+            }
+
             webView.Source = targetUri;
+
+            CurrentWebViewSource = targetUri;
+
+            forwardStack.Clear();
+
+            await Task.Yield();
+            forwardButton.IsEnabled = false;
         }
     }
 
@@ -140,14 +158,42 @@ public partial class MainPage : ContentPage
         Search((DictionaryInfo)e.SelectedItem, searchBox.Text);
     }
 
-    private void Back_Clicked(object sender, EventArgs e)
+    private async void Back_Clicked(object sender, EventArgs e)
     {
-        if (webView.CanGoBack) webView.GoBack();
+        forwardStack.Push(CurrentWebViewSource);
+
+        var targetUri = backStack.Pop();
+
+        webView.Source = targetUri;
+
+        CurrentWebViewSource = targetUri;
+
+        await Task.Yield();
+        forwardButton.IsEnabled = true;
+
+        if (backStack.Count == 0)
+        {
+            backButton.IsEnabled = false;
+        }
     }
 
-    private void Forward_Clicked(object sender, EventArgs e)
+    private async void Forward_Clicked(object sender, EventArgs e)
     {
-        if (webView.CanGoForward) webView.GoForward();
+        backStack.Push(CurrentWebViewSource);
+
+        var targetUri = forwardStack.Pop();
+
+        webView.Source = targetUri;
+
+        CurrentWebViewSource = targetUri;
+
+        await Task.Yield();
+        backButton.IsEnabled = true;
+
+        if (forwardStack.Count == 0)
+        {
+            forwardButton.IsEnabled = false;
+        }
     }
 
     private async void AddDictionary_Clicked(object sender, EventArgs e)
