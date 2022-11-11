@@ -9,8 +9,6 @@ namespace WordCrossMaui;
 [QueryProperty(nameof(DictView), "UpdatedDictView")]
 public partial class MainPage : ContentPage
 {
-    readonly string pathToDictionary = Path.Join(FileSystem.AppDataDirectory, "dic");
-
     readonly ObservableCollection<DictionaryInfo> _dictView = new ObservableCollection<DictionaryInfo>();
 
     public ObservableCollection<DictionaryInfo> DictView
@@ -27,7 +25,7 @@ public partial class MainPage : ContentPage
                 _dictView.Add(d);
             }
 
-            File.WriteAllText(pathToDictionary, JsonSerializer.Serialize(_dictView));
+            File.WriteAllText(Env.PathToDictionary, JsonSerializer.Serialize(new Archive(_dictView)));
 
             if (Preferences.Get("sync_with_dropbox", false))
             {
@@ -62,22 +60,25 @@ public partial class MainPage : ContentPage
         {
             Preferences.Clear();
 
-            if (File.Exists(pathToDictionary))
+            if (File.Exists(Env.PathToDictionary))
             {
-                File.Delete(pathToDictionary);
+                File.Delete(Env.PathToDictionary);
             }
         }
 
-        //辞書リストをロード
-        if (File.Exists(pathToDictionary))
-        {
-            var rawData = File.ReadAllText(pathToDictionary);
+        //ver1.9.2の辞書データを変換
+        Updater.ConvertDictionaryType();
 
-            var deserialized = JsonSerializer.Deserialize<ObservableCollection<DictionaryInfo>>(rawData);
+        //辞書リストをロード
+        if (File.Exists(Env.PathToDictionary))
+        {
+            var rawData = File.ReadAllText(Env.PathToDictionary);
+
+            var deserialized = JsonSerializer.Deserialize<Archive>(rawData);
 
             if(deserialized != null)
             {
-                DictView = deserialized;
+                DictView = deserialized.Dictionaries;
             }
         }
         else
@@ -205,13 +206,13 @@ public partial class MainPage : ContentPage
             if (!await client.IsFileExist("", "dic"))
             {
                 //存在しなければアップロードする
-                await client.Upload("/dic", JsonSerializer.Serialize(DictView));
+                await client.Upload("/dic", JsonSerializer.Serialize(new Archive(DictView)));
             }
             else
             {
                 if (Preferences.Get("is_sync_successful", false))
                 {
-                    await client.Upload("/dic", JsonSerializer.Serialize(DictView));
+                    await client.Upload("/dic", JsonSerializer.Serialize(new Archive(DictView)));
                 }
                 else
                 {
@@ -221,17 +222,17 @@ public partial class MainPage : ContentPage
                         var dic = await client.Download("/dic");
                         if (dic != null)
                         {
-                            var deserialized = JsonSerializer.Deserialize<ObservableCollection<DictionaryInfo>>(dic);
+                            var deserialized = JsonSerializer.Deserialize<Archive>(dic);
                             if (deserialized != null)
                             {
-                                DictView = deserialized;
+                                DictView = deserialized.Dictionaries;
                             }
                         }
                     }
                     else
                     {
                         //「いいえ」ならローカルをアップロード
-                        await client.Upload("/dic", JsonSerializer.Serialize(DictView));
+                        await client.Upload("/dic", JsonSerializer.Serialize(new Archive(DictView)));
                     }
                 }
             }

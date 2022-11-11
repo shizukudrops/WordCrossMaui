@@ -94,7 +94,7 @@ public partial class AboutPage : ContentPage
         if (!await client.IsFileExist("", "dic"))
         {
             //存在しなければアップロードする
-            await client.Upload("/dic", JsonSerializer.Serialize(ReceivedDictView));
+            await client.Upload("/dic", JsonSerializer.Serialize(new Archive(ReceivedDictView)));
         }
         else
         {
@@ -105,17 +105,17 @@ public partial class AboutPage : ContentPage
                 var dic = await client.Download("/dic");
                 if (dic != null)
                 {
-                    var deserialized = JsonSerializer.Deserialize<ObservableCollection<DictionaryInfo>>(dic);
+                    var deserialized = JsonSerializer.Deserialize<Archive>(dic);
                     if (deserialized != null)
                     {
-                        UpdatedDictView = deserialized;
+                        UpdatedDictView = deserialized.Dictionaries;
                     }
                 }
             }
             else
             {
                 //「いいえ」ならローカルをアップロード
-                await client.Upload("/dic", JsonSerializer.Serialize(ReceivedDictView));
+                await client.Upload("/dic", JsonSerializer.Serialize(new Archive(ReceivedDictView)));
             }
         }
 

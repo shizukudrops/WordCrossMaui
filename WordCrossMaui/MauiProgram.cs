@@ -10,6 +10,11 @@ public static class MauiProgram
 {
 	public static MauiApp CreateMauiApp()
 	{
+		if(Preferences.Get("client_id", null) == null)
+		{
+			Preferences.Default.Set("client_id", Guid.NewGuid().ToString());
+		}
+
 		var builder = MauiApp.CreateBuilder();
 		builder
 			.UseMauiApp<App>()
