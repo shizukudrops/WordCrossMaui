@@ -53,19 +53,6 @@ public partial class MainPage : ContentPage
 
         BindingContext = this;
 
-        //「次回起動時に初期化」のチェックがされていたなら辞書と設定をクリア
-        var isInitialize = Preferences.Get("initialize_on_next_launch", false);
-
-        if (isInitialize)
-        {
-            Preferences.Clear();
-
-            if (File.Exists(Env.PathToDictionary))
-            {
-                File.Delete(Env.PathToDictionary);
-            }
-        }
-
         //ver1.9.2の辞書データを変換
         Updater.ConvertDictionaryType();
 
