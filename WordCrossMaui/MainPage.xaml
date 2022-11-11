@@ -21,8 +21,8 @@
             <Entry x:Name="searchBox" Completed="SearchBox_Completed" ClearButtonVisibility="WhileEditing" Placeholder="検索ワードを入力してエンター" />
 
             <HorizontalStackLayout Grid.Column="1" Spacing="5">
-                <ImageButton x:Name="backButton" Source="back.png" HeightRequest="45" Padding="10" Clicked="Back_Clicked" />
-                <ImageButton x:Name="forwardButton" Source="forward.png" HeightRequest="45" Padding="10" Clicked="Forward_Clicked" />
+                <ImageButton x:Name="backButton" Source="back.png" HeightRequest="45" Padding="10" Clicked="Back_Clicked" IsEnabled="False" />
+                <ImageButton x:Name="forwardButton" Source="forward.png" HeightRequest="45" Padding="10" Clicked="Forward_Clicked" IsEnabled="False" />
                 <Button ImageSource="add.png" Text="辞書を追加" FontSize="11" HeightRequest="45" Clicked="AddDictionary_Clicked" />
                 <Button ImageSource="manage.png" Text="辞書の管理" FontSize="11" HeightRequest="45" Clicked="ManageDictionary_Clicked" />
             </HorizontalStackLayout>
