@@ -53,9 +53,6 @@ public partial class MainPage : ContentPage
 
         BindingContext = this;
 
-        //ver1.9.2の辞書データを変換
-        Updater.ConvertDictionaryType();
-
         //辞書リストをロード
         if (File.Exists(Env.PathToDictionary))
         {
