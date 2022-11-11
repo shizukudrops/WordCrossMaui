@@ -33,7 +33,7 @@
                 <Label Text="例えば、Merriam Websterで「sleepy」を検索すると、検索結果のページのURLは「https://www.merriam-webster.com/dictionary/sleepy」となります。この場合、「https://www.merriam-webster.com/dictionary/」の部分を入力してください。" />
                 <Label Text="セパレーター" FontAttributes="Bold" />
                 <Label Text="成句を検索するときに、オンライン辞書がどのように複数のワードを接続するかを指定します。" />
-                <Label Text="例えば、Collins Thsaurusで「go to bed」を検索すると、検索結果のページのURLは「https://www.collinsdictionary.com/dictionary/english-thesaurus/go-to-bed」となります。「go to bed」が「go-to-bed」に変換されているので、「-」を入力してください。" />
+                <Label Text="例えば、Collins Thesaurusで「go to bed」を検索すると、検索結果のページのURLは「https://www.collinsdictionary.com/dictionary/english-thesaurus/go-to-bed」となります。「go to bed」が「go-to-bed」に変換されているので、「-」を入力してください。" />
                 <Label Text="空欄の場合は半角スペースで代用されます。" />
                 <Label Text="サフィックス" FontAttributes="Bold" />
                 <Label Text="検索ワードの後ろにもURLが続く場合にはその部分を指定します。一部の辞書で必要です。" />
