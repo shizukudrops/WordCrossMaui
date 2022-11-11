@@ -1,5 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Text;
 using System.Text.Json;
 
 namespace WordCrossMaui;
@@ -9,11 +10,6 @@ namespace WordCrossMaui;
 public partial class MainPage : ContentPage
 {
     readonly string pathToDictionary = Path.Join(FileSystem.AppDataDirectory, "dic");
-
-    readonly Stack<Uri> backStack = new Stack<Uri>();
-    readonly Stack<Uri> forwardStack = new Stack<Uri>();
-
-    public Uri? CurrentWebViewSource { get; set; }
 
     readonly ObservableCollection<DictionaryInfo> _dictView = new ObservableCollection<DictionaryInfo>();
 
@@ -90,9 +86,27 @@ public partial class MainPage : ContentPage
         }
 
         dictList.ItemsSource = DictView;
+
+        SetStartPage();
+
+        backButton.SetBinding(IsEnabledProperty, new Binding("CanGoBack", BindingMode.OneWay, source: webView));
+        forwardButton.SetBinding(IsEnabledProperty, new Binding("CanGoForward", BindingMode.OneWay, source: webView));
     }
 
-    private async void Search(DictionaryInfo dict, string input)
+    private async void SetStartPage()
+    {
+        using (var stream = await FileSystem.OpenAppPackageFileAsync("StartPage.html"))
+        {
+            var reader = new StreamReader(stream, Encoding.UTF8);
+
+            webView.Source = new HtmlWebViewSource
+            {
+                Html = reader.ReadToEnd()
+            };
+        }
+    }
+
+    private void Search(DictionaryInfo dict, string input)
     {
         //どの辞書も選ばれていなかったら一番上の辞書で検索する。辞書が存在しなければ戻る。
         if (dict == null)
@@ -131,20 +145,7 @@ public partial class MainPage : ContentPage
 
         if (Uri.TryCreate(targetUriString, UriKind.Absolute, out targetUri))
         {
-            if (CurrentWebViewSource != null)
-            {
-                backStack.Push(CurrentWebViewSource);
-                backButton.IsEnabled = true;
-            }
-
             webView.Source = targetUri;
-
-            CurrentWebViewSource = targetUri;
-
-            forwardStack.Clear();
-
-            await Task.Yield();
-            forwardButton.IsEnabled = false;
         }
     }
 
@@ -158,42 +159,14 @@ public partial class MainPage : ContentPage
         Search((DictionaryInfo)e.SelectedItem, searchBox.Text);
     }
 
-    private async void Back_Clicked(object sender, EventArgs e)
+    private void Back_Clicked(object sender, EventArgs e)
     {
-        forwardStack.Push(CurrentWebViewSource);
-
-        var targetUri = backStack.Pop();
-
-        webView.Source = targetUri;
-
-        CurrentWebViewSource = targetUri;
-
-        await Task.Yield();
-        forwardButton.IsEnabled = true;
-
-        if (backStack.Count == 0)
-        {
-            backButton.IsEnabled = false;
-        }
+        if (webView.CanGoBack) webView.GoBack();
     }
 
-    private async void Forward_Clicked(object sender, EventArgs e)
+    private void Forward_Clicked(object sender, EventArgs e)
     {
-        backStack.Push(CurrentWebViewSource);
-
-        var targetUri = forwardStack.Pop();
-
-        webView.Source = targetUri;
-
-        CurrentWebViewSource = targetUri;
-
-        await Task.Yield();
-        backButton.IsEnabled = true;
-
-        if (forwardStack.Count == 0)
-        {
-            forwardButton.IsEnabled = false;
-        }
+        if (webView.CanGoForward) webView.GoForward();
     }
 
     private async void AddDictionary_Clicked(object sender, EventArgs e)
