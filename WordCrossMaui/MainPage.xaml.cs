@@ -99,10 +99,11 @@ public partial class MainPage : ContentPage
         {
             var reader = new StreamReader(stream, Encoding.UTF8);
 
-            webView.Source = new HtmlWebViewSource
-            {
-                Html = reader.ReadToEnd()
-            };
+            //ファイルとしてwebviewに読み込ませないと戻るボタンがバグる
+            var target = Path.Join(FileSystem.AppDataDirectory, "StartPage.html");
+            File.WriteAllText(target, reader.ReadToEnd());
+
+            webView.Source = target;
         }
     }
 
