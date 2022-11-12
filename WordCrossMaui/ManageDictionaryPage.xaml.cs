@@ -1,3 +1,4 @@
+using Microsoft.Maui.Controls;
 using System.Collections.ObjectModel;
 
 namespace WordCrossMaui;
@@ -5,19 +6,19 @@ namespace WordCrossMaui;
 [QueryProperty(nameof(ReceivedDictView), "CurrentDictView")]
 public partial class ManageDictionaryPage : ContentPage
 {
-    readonly ObservableCollection<DictionaryInfo> dictionaryList = new ObservableCollection<DictionaryInfo>();
+    readonly ObservableCollection<DictionaryViewModel> dictionaryList = new ObservableCollection<DictionaryViewModel>();
 
-    ReadOnlyCollection<DictionaryInfo>? initialDictionaries;
+    ReadOnlyCollection<DictionaryViewModel>? initialDictionaries;
 
     //クエリ受信用
-    public ObservableCollection<DictionaryInfo> ReceivedDictView
+    public ObservableCollection<DictionaryViewModel> ReceivedDictView
     {
         set
         {
             if (value == null) return;
 
             //値が渡ってきたときにinitialDictonariesにコピーする（変更の巻き戻し用）
-            initialDictionaries = new ReadOnlyCollection<DictionaryInfo>(value.ToList());
+            initialDictionaries = new ReadOnlyCollection<DictionaryViewModel>(value.ToList());
 
             dictionaryList.Clear();
             
@@ -34,8 +35,39 @@ public partial class ManageDictionaryPage : ContentPage
 	{
 		InitializeComponent();
 
-        dictList.ItemsSource = dictionaryList;        
-	}
+        dictList.ItemsSource = dictionaryList;
+        dictList.ItemTemplate = new DataTemplate(() =>
+        {
+            var label = new Label();
+            label.SetBinding(Label.TextProperty, new Binding("Name"));
+
+            var layout = new StackLayout()
+            {
+                Children =
+                {
+                    label
+                },
+                Margin = new Thickness(-24, 0, 4, 0),
+                Padding = new Thickness(40, 8, 8, 8)
+            };
+            layout.SetBinding(BackgroundColorProperty, new Binding("BackgroundColor"));
+
+            return layout;
+        });
+    }
+
+    private void dictList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        foreach (var d in e.CurrentSelection)
+        {
+            ((DictionaryViewModel)d).Highlight();
+        }
+
+        foreach (var d in dictionaryList.Where(d => !e.CurrentSelection.Contains(d)))
+        {
+            d.UnHighlight();
+        }
+    }
 
     private void dictList_ReorderCompleted(object sender, EventArgs e)
     {
@@ -48,7 +80,7 @@ public partial class ManageDictionaryPage : ContentPage
 
         foreach(var d in selected)
         {
-            dictionaryList.Remove((DictionaryInfo)d);
+            dictionaryList.Remove((DictionaryViewModel)d);
         }
     }
 
@@ -60,7 +92,7 @@ public partial class ManageDictionaryPage : ContentPage
 
         foreach(var d in initialDictionaries)
         {
-            dictionaryList.Add(d);
+            dictionaryList.Add(new DictionaryViewModel(d));
         }
     }
 
@@ -68,7 +100,7 @@ public partial class ManageDictionaryPage : ContentPage
     {
         var param = new Dictionary<string, object>
         {
-            {"UpdatedDictView",  dictionaryList}
+            {"UpdatedDictView",  new ObservableCollection<DictionaryViewModel>(dictionaryList.Select(d => new DictionaryViewModel(d)))}
         };
 
         await Shell.Current.GoToAsync("///Main", param);

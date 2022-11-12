@@ -7,8 +7,8 @@ namespace WordCrossMaui;
 [QueryProperty(nameof(ReceivedDictView), "CurrentDictView")]
 public partial class AboutPage : ContentPage
 {
-    public ObservableCollection<DictionaryInfo> ReceivedDictView { get; set; } = new ObservableCollection<DictionaryInfo>();
-    public ObservableCollection<DictionaryInfo>? UpdatedDictView { get; set; }
+    public ObservableCollection<DictionaryViewModel> ReceivedDictView { get; set; } = new ObservableCollection<DictionaryViewModel>();
+    public ObservableCollection<DictionaryViewModel>? UpdatedDictView { get; set; }
 
     public AboutPage()
 	{
@@ -108,7 +108,7 @@ public partial class AboutPage : ContentPage
                     var deserialized = JsonSerializer.Deserialize<Archive>(dic);
                     if (deserialized != null)
                     {
-                        UpdatedDictView = deserialized.Dictionaries;
+                        UpdatedDictView = new ObservableCollection<DictionaryViewModel>(deserialized.Dictionaries.Select(d => new DictionaryViewModel(d)));
                     }
                 }
             }

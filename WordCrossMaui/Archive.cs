@@ -13,11 +13,20 @@ namespace WordCrossMaui
         public DateTime TimeStamp { get; set; }
         public ObservableCollection<DictionaryInfo> Dictionaries { get; set; }
 
+        public Archive() { }
+
         public Archive(ObservableCollection<DictionaryInfo> dictionaries)
         {
             ClientId = Preferences.Get("client_id", "");
             TimeStamp = DateTime.Now;
             Dictionaries = dictionaries;
+        }
+
+        public Archive(ObservableCollection<DictionaryViewModel> dictionaries)
+        {
+            ClientId = Preferences.Get("client_id", "");
+            TimeStamp = DateTime.Now;
+            Dictionaries = new ObservableCollection<DictionaryInfo>(dictionaries.Select(d => (DictionaryInfo)d));
         }
     }
 }

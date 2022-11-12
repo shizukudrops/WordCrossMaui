@@ -3,24 +3,6 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="WordCrossMaui.ManageDictionaryPage">
 
-    <ContentPage.Resources>
-        <Style TargetType="Grid">
-            <Setter Property="VisualStateManager.VisualStateGroups">
-                <VisualStateGroupList>
-                    <VisualStateGroup x:Name="CommonStates">
-                        <VisualState x:Name="Normal" />
-                        <VisualState x:Name="Selected">
-                            <VisualState.Setters>
-                                <Setter Property="BackgroundColor"
-                                        Value="{AppThemeBinding Light={StaticResource Blue300Accent}, Dark={StaticResource Blue400Accent}}" />
-                            </VisualState.Setters>
-                        </VisualState>
-                    </VisualStateGroup>
-                </VisualStateGroupList>
-            </Setter>
-        </Style>
-    </ContentPage.Resources>
-
     <Grid ColumnSpacing="10" Margin="50, 10, 50, 50">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="6*"/>
@@ -28,15 +10,7 @@
         </Grid.ColumnDefinitions>
 
         <Label Text="複数選択可／ドラッグで並べ替え" />
-        <CollectionView x:Name="dictList" SelectionMode="Multiple" CanReorderItems="True" EmptyView="辞書が登録されていません" Margin="0, 30, 0, 0" ReorderCompleted="dictList_ReorderCompleted">
-            <CollectionView.ItemTemplate>
-                <DataTemplate>
-                    <Grid Margin="-24, 0, 4, 0"  Padding="40, 8, 8, 8">
-                        <Label Text="{Binding Name}" />
-                    </Grid>
-                </DataTemplate>
-            </CollectionView.ItemTemplate>
-        </CollectionView>
+        <CollectionView x:Name="dictList" SelectionMode="Multiple" CanReorderItems="True" EmptyView="辞書が登録されていません" Margin="0, 30, 0, 0" SelectionChanged="dictList_SelectionChanged" ReorderCompleted="dictList_ReorderCompleted" />
 
         <VerticalStackLayout Grid.Column="1" Spacing="10">
             <Button Text="選択項目を削除" Clicked="Remove_Clicked" />

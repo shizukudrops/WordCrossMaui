@@ -25,7 +25,7 @@ public partial class AddDictionaryPage : ContentPage
 
         var param = new Dictionary<string, object>
         {
-            {"NewDictionaries",  new List<DictionaryInfo>{ new DictionaryInfo(nameBox.Text, urlBox.Text, separatorBox.Text, suffixBox.Text) } }
+            {"NewDictionaries",  new List<DictionaryViewModel>{ new DictionaryViewModel(nameBox.Text, urlBox.Text, separatorBox.Text, suffixBox.Text) } }
         };
 
         ClearTextBox();

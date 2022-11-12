@@ -9,9 +9,9 @@ namespace WordCrossMaui;
 [QueryProperty(nameof(DictView), "UpdatedDictView")]
 public partial class MainPage : ContentPage
 {
-    readonly ObservableCollection<DictionaryInfo> _dictView = new ObservableCollection<DictionaryInfo>();
+    readonly ObservableCollection<DictionaryViewModel> _dictView = new ObservableCollection<DictionaryViewModel>();
 
-    public ObservableCollection<DictionaryInfo> DictView
+    public ObservableCollection<DictionaryViewModel> DictView
     {
         get => _dictView;
         set
@@ -37,13 +37,13 @@ public partial class MainPage : ContentPage
     }
 
     //クエリ受信用
-    public List<DictionaryInfo> ReceivedNewDictionaries
+    public List<DictionaryViewModel> ReceivedNewDictionaries
     {
         set
         {
             if (value == null) return;
 
-            DictView = new ObservableCollection<DictionaryInfo>(DictView.Concat(value));
+            DictView = new ObservableCollection<DictionaryViewModel>(DictView.Concat(value));
         }
     }
     
@@ -62,15 +62,16 @@ public partial class MainPage : ContentPage
 
             if(deserialized != null)
             {
-                DictView = deserialized.Dictionaries;
+                DictView = new ObservableCollection<DictionaryViewModel>(deserialized.Dictionaries.Select(d => new DictionaryViewModel(d)));
             }
         }
         else
         {
-            DictView = new ObservableCollection<DictionaryInfo>(PresetDictionaries.DictionaryList.Where(d => d.IsDefault));
+            DictView = new ObservableCollection<DictionaryViewModel>(PresetDictionaries.DictionaryList.Where(d => d.IsDefault).Select(d => new DictionaryViewModel(d)));
         }
 
         dictList.ItemsSource = DictView;
+        dictList.ItemTemplate = new DataTemplate(typeof(MyViewCell));
 
         SetStartPage();
 
@@ -142,6 +143,14 @@ public partial class MainPage : ContentPage
 
     private void DictList_ItemSelected(object sender, SelectedItemChangedEventArgs e)
     {
+        var selected = e.SelectedItem as DictionaryViewModel;
+        selected.Highlight();
+
+        foreach (var d in DictView.Where(d => d != selected))
+        {
+            d.UnHighlight();
+        }
+
         Search((DictionaryInfo)e.SelectedItem, searchBox.Text);
     }
 
@@ -164,7 +173,7 @@ public partial class MainPage : ContentPage
     {
         var param = new Dictionary<string, object>
         {
-            {"CurrentDictView", DictView}
+            {"CurrentDictView", new ObservableCollection<DictionaryViewModel>(DictView.Select(d => new DictionaryViewModel(d)))}
         };
 
         await Shell.Current.GoToAsync("///ManageDictionary", param);
@@ -174,7 +183,7 @@ public partial class MainPage : ContentPage
     {
         var param = new Dictionary<string, object>
         {
-            {"CurrentDictView", DictView}
+            {"CurrentDictView", new ObservableCollection<DictionaryViewModel>(DictView.Select(d => new DictionaryViewModel(d)))}
         };
 
         await Shell.Current.GoToAsync("///About", param);
@@ -209,7 +218,7 @@ public partial class MainPage : ContentPage
                             var deserialized = JsonSerializer.Deserialize<Archive>(dic);
                             if (deserialized != null)
                             {
-                                DictView = deserialized.Dictionaries;
+                                DictView = new ObservableCollection<DictionaryViewModel>(deserialized.Dictionaries.Select(d => new DictionaryViewModel(d)));
                             }
                         }
                     }
