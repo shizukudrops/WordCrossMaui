@@ -4,6 +4,8 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace WordCrossMaui
 {
@@ -11,22 +13,22 @@ namespace WordCrossMaui
     {
         public string ClientId { get; set; }
         public DateTime TimeStamp { get; set; }
-        public ObservableCollection<DictionaryInfo> Dictionaries { get; set; }
+        public List<DictionaryInfo> Dictionaries { get; set; }
 
         public Archive() { }
 
-        public Archive(ObservableCollection<DictionaryInfo> dictionaries)
+        public Archive(IEnumerable<DictionaryInfo> dictionaries)
         {
             ClientId = Preferences.Get("client_id", "");
             TimeStamp = DateTime.Now;
-            Dictionaries = dictionaries;
+            Dictionaries = dictionaries.ToList();
         }
 
-        public Archive(ObservableCollection<DictionaryViewModel> dictionaries)
+        public Archive(IEnumerable<DictionaryViewModel> dictionaries)
         {
             ClientId = Preferences.Get("client_id", "");
             TimeStamp = DateTime.Now;
-            Dictionaries = new ObservableCollection<DictionaryInfo>(dictionaries.Select(d => (DictionaryInfo)d));
+            Dictionaries = Extensions.Convert(dictionaries).ToList();
         }
     }
 }

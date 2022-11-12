@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿using HtmlAgilityPack;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Text;
 using System.Text.Json;
@@ -46,6 +47,8 @@ public partial class MainPage : ContentPage
             DictView = new ObservableCollection<DictionaryViewModel>(DictView.Concat(value));
         }
     }
+
+    private string MessageOnStartPage { get; set; } = "";
     
     public MainPage()
 	{
@@ -56,18 +59,27 @@ public partial class MainPage : ContentPage
         //辞書リストをロード
         if (File.Exists(Env.PathToDictionary))
         {
-            var rawData = File.ReadAllText(Env.PathToDictionary);
-
-            var deserialized = JsonSerializer.Deserialize<Archive>(rawData);
-
-            if(deserialized != null)
+            try
             {
-                DictView = new ObservableCollection<DictionaryViewModel>(deserialized.Dictionaries.Select(d => new DictionaryViewModel(d)));
+                var rawData = File.ReadAllText(Env.PathToDictionary);
+
+                var deserialized = JsonSerializer.Deserialize<Archive>(rawData);
+
+                if (deserialized != null)
+                {
+                    DictView = new ObservableCollection<DictionaryViewModel>(Extensions.Convert(deserialized.Dictionaries));
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.Write(ex);
+                MessageOnStartPage += "辞書データの読み込みに失敗しました。デフォルトのリストをロードしました。";
+                DictView = new ObservableCollection<DictionaryViewModel>(Extensions.Convert(PresetDictionaries.DictionaryList.Where(d => d.IsDefault)));
             }
         }
         else
         {
-            DictView = new ObservableCollection<DictionaryViewModel>(PresetDictionaries.DictionaryList.Where(d => d.IsDefault).Select(d => new DictionaryViewModel(d)));
+            DictView = new ObservableCollection<DictionaryViewModel>(Extensions.Convert(PresetDictionaries.DictionaryList.Where(d => d.IsDefault)));
         }
 
         dictList.ItemsSource = DictView;
@@ -85,10 +97,18 @@ public partial class MainPage : ContentPage
         {
             var reader = new StreamReader(stream, Encoding.UTF8);
 
+            var html = new HtmlDocument();
+            html.Load(reader);
+
+            var div = html.DocumentNode.SelectSingleNode(@"//div[@id=""append_area""]");
+
+            var newNodeString = $"<p>{MessageOnStartPage}</p>";
+            var newNode = HtmlNode.CreateNode(newNodeString);
+            div.AppendChild(newNode);
+
             //ファイルとしてwebviewに読み込ませないと戻るボタンがバグる
             var target = Path.Join(FileSystem.AppDataDirectory, "StartPage.html");
-            File.WriteAllText(target, reader.ReadToEnd());
-
+            File.WriteAllText(target, html.DocumentNode.OuterHtml);
             webView.Source = target;
         }
     }
@@ -173,7 +193,7 @@ public partial class MainPage : ContentPage
     {
         var param = new Dictionary<string, object>
         {
-            {"CurrentDictView", new ObservableCollection<DictionaryViewModel>(DictView.Select(d => new DictionaryViewModel(d)))}
+            {"CurrentDictView", Extensions.Clone(DictView)}
         };
 
         await Shell.Current.GoToAsync("///ManageDictionary", param);
@@ -183,7 +203,7 @@ public partial class MainPage : ContentPage
     {
         var param = new Dictionary<string, object>
         {
-            {"CurrentDictView", new ObservableCollection<DictionaryViewModel>(DictView.Select(d => new DictionaryViewModel(d)))}
+            {"CurrentDictView", Extensions.Clone(DictView)}
         };
 
         await Shell.Current.GoToAsync("///About", param);

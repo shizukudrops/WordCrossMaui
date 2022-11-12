@@ -30,21 +30,15 @@ namespace WordCrossMaui
 
         public DictionaryViewModel(string name, string baseUrl, string separator = "", string suffix = "", bool isDefault = false)
             : base(name, baseUrl, separator, suffix, isDefault)
-        {
-            
-        }
+        {  }
 
         public DictionaryViewModel(DictionaryInfo dictionaryInfo)
-            :base(dictionaryInfo.Name, dictionaryInfo.BaseUrl, dictionaryInfo.Separator, dictionaryInfo.Suffix, dictionaryInfo.IsDefault)
-        {
-
-        }
+            :base(dictionaryInfo)
+        {  }
 
         public DictionaryViewModel(DictionaryViewModel dictionaryViewModel)
-            :base(dictionaryViewModel.Name, dictionaryViewModel.BaseUrl, dictionaryViewModel.Separator, dictionaryViewModel.Suffix, dictionaryViewModel.IsDefault)
-        {
-
-        }
+            :base(dictionaryViewModel as DictionaryInfo)
+        {  }
 
         public void Highlight()
         {

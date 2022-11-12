@@ -100,7 +100,7 @@ public partial class ManageDictionaryPage : ContentPage
     {
         var param = new Dictionary<string, object>
         {
-            {"UpdatedDictView",  new ObservableCollection<DictionaryViewModel>(dictionaryList.Select(d => new DictionaryViewModel(d)))}
+            {"UpdatedDictView", Extensions.Clone(dictionaryList)}
         };
 
         await Shell.Current.GoToAsync("///Main", param);

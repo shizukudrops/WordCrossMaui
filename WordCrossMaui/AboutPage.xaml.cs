@@ -66,7 +66,7 @@ public partial class AboutPage : ContentPage
         {
             var param = new Dictionary<string, object>
         {
-            {"UpdatedDictView",  new ObservableCollection<DictionaryInfo>(UpdatedDictView)}
+            {"UpdatedDictView",  Extensions.Clone(UpdatedDictView)}
         };
 
             await Shell.Current.GoToAsync("///Main", param);

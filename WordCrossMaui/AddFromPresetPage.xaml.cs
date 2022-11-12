@@ -58,7 +58,7 @@ public partial class AddFromPresetPage : ContentPage
 
         var param = new Dictionary<string, object>
         {
-            {"NewDictionaries", new List<DictionaryViewModel>(selected.Select(d => new DictionaryViewModel(d)))}
+            {"NewDictionaries", Extensions.Clone(selected)}
         };
 
         ResetDictionaryList();

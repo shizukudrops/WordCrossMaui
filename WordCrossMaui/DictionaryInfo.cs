@@ -19,6 +19,7 @@ namespace WordCrossMaui
         [JsonIgnore]
         public bool IsDefault { get; }
 
+        [JsonConstructor]
         public DictionaryInfo(string name, string baseUrl, string separator = "", string suffix = "", bool isDefault = false)
         {
             Name = name;
@@ -26,6 +27,15 @@ namespace WordCrossMaui
             Separator = separator;
             Suffix = suffix;
             IsDefault = isDefault;
+        }
+
+        public DictionaryInfo(DictionaryInfo dictionaryInfo)
+        {
+            Name = dictionaryInfo.Name;
+            BaseUrl = dictionaryInfo.BaseUrl;
+            Separator = dictionaryInfo.Separator;
+            Suffix = dictionaryInfo.Suffix;
+            IsDefault = dictionaryInfo.IsDefault;
         }
 
     };
