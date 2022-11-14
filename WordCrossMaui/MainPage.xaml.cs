@@ -7,7 +7,7 @@ using System.Text.Json;
 namespace WordCrossMaui;
 
 [QueryProperty(nameof(ReceivedNewDictionaries), "NewDictionaries")]
-[QueryProperty(nameof(DictView), "UpdatedDictView")]
+[QueryProperty(nameof(UpdatedDictView), "UpdatedDictView")]
 public partial class MainPage : ContentPage
 {
     readonly ObservableCollection<DictionaryViewModel> _dictView = new ObservableCollection<DictionaryViewModel>();
@@ -26,25 +26,33 @@ public partial class MainPage : ContentPage
                 _dictView.Add(d);
             }
 
-            File.WriteAllText(Env.PathToDictionary, JsonSerializer.Serialize(new Archive(_dictView)));
-
-            if (Preferences.Get("sync_with_dropbox", false))
-            {
-                SyncWithDropbox();
-            }
-
             OnPropertyChanged();
         }
     }
 
     //クエリ受信用
+    public ObservableCollection<DictionaryViewModel> UpdatedDictView
+    {
+        set
+        {
+            if(value == null) return;
+
+            File.WriteAllText(Env.PathToDictionary, JsonSerializer.Serialize(new Archive(value)));
+
+            if (Preferences.Get("sync_with_dropbox", false))
+            {
+                SyncWithDropbox();
+            }
+        }
+    }
+
     public List<DictionaryViewModel> ReceivedNewDictionaries
     {
         set
         {
             if (value == null) return;
 
-            DictView = new ObservableCollection<DictionaryViewModel>(DictView.Concat(value));
+            UpdatedDictView = new ObservableCollection<DictionaryViewModel>(DictView.Concat(value));
         }
     }
 
@@ -57,29 +65,20 @@ public partial class MainPage : ContentPage
         BindingContext = this;
 
         //辞書リストをロード
-        if (File.Exists(Env.PathToDictionary))
+        if (Preferences.Get("sync_with_dropbox", false))
         {
-            try
-            {
-                var rawData = File.ReadAllText(Env.PathToDictionary);
-
-                var deserialized = JsonSerializer.Deserialize<Archive>(rawData);
-
-                if (deserialized != null)
-                {
-                    DictView = new ObservableCollection<DictionaryViewModel>(Extensions.Convert(deserialized.Dictionaries));
-                }
-            }
-            catch (Exception ex)
-            {
-                Debug.Write(ex);
-                MessageOnStartPage += "辞書データの読み込みに失敗しました。デフォルトのリストをロードしました。";
-                DictView = new ObservableCollection<DictionaryViewModel>(Extensions.Convert(PresetDictionaries.DictionaryList.Where(d => d.IsDefault)));
-            }
+            SyncWithDropbox();
         }
         else
         {
-            DictView = new ObservableCollection<DictionaryViewModel>(Extensions.Convert(PresetDictionaries.DictionaryList.Where(d => d.IsDefault)));
+            if (File.Exists(Env.PathToDictionary))
+            {
+                LoadLocal();
+            }
+            else
+            {
+                LoadDefault();
+            }
         }
 
         dictList.ItemsSource = DictView;
@@ -110,6 +109,57 @@ public partial class MainPage : ContentPage
             var target = Path.Join(FileSystem.AppDataDirectory, "StartPage.html");
             File.WriteAllText(target, html.DocumentNode.OuterHtml);
             webView.Source = target;
+        }
+    }
+
+    private async void SyncWithDropbox()
+    {
+        var client = new DropboxInterop();
+        var (result, archive) = await client.Sync();
+
+        if(result == SyncResult.CloudDownload)
+        {
+            UpdatedDictView = new ObservableCollection<DictionaryViewModel>(Extensions.Convert(archive.Dictionaries));
+        }
+        else if(result == SyncResult.LocalUpload)
+        {
+            DictView = new ObservableCollection<DictionaryViewModel>(Extensions.Convert(archive.Dictionaries));
+        }
+        else if(result == SyncResult.Fail)
+        {
+            if (File.Exists(Env.PathToDictionary))
+            {
+                LoadLocal();
+            }
+            else
+            {
+                LoadDefault();
+            }
+        }
+    }
+
+    private void LoadDefault()
+    {
+        UpdatedDictView = new ObservableCollection<DictionaryViewModel>(Extensions.Convert(PresetDictionaries.DictionaryList.Where(d => d.IsDefault)));
+    }
+
+    private void LoadLocal()
+    {
+        try
+        {
+            var rawData = File.ReadAllText(Env.PathToDictionary);
+
+            var deserialized = JsonSerializer.Deserialize<Archive>(rawData);
+
+            if (deserialized != null)
+            {
+                DictView = new ObservableCollection<DictionaryViewModel>(Extensions.Convert(deserialized.Dictionaries));
+            }
+        }
+        catch (Exception e)
+        {
+            Debug.Write(e);
+            LoadDefault();
         }
     }
 
@@ -207,55 +257,6 @@ public partial class MainPage : ContentPage
         };
 
         await Shell.Current.GoToAsync("///About", param);
-    }
-
-    private async Task SyncWithDropbox()
-    {
-        try
-        {
-            var client = new DropboxInterop();
-
-            //辞書が存在するか確認
-            if (!await client.IsFileExist("", "dic"))
-            {
-                //存在しなければアップロードする
-                await client.Upload("/dic", JsonSerializer.Serialize(new Archive(DictView)));
-            }
-            else
-            {
-                if (Preferences.Get("is_sync_successful", false))
-                {
-                    await client.Upload("/dic", JsonSerializer.Serialize(new Archive(DictView)));
-                }
-                else
-                {
-                    if (await DisplayAlert("確認", "クラウドに別のバージョンの辞書リストが存在します。クラウドのデータで現在のリストを置き換えますか？", "はい、置き換えます", "いいえ、ローカルを保持します"))
-                    {
-                        //「はい」ならクラウドからダウンロード
-                        var dic = await client.Download("/dic");
-                        if (dic != null)
-                        {
-                            var deserialized = JsonSerializer.Deserialize<Archive>(dic);
-                            if (deserialized != null)
-                            {
-                                DictView = new ObservableCollection<DictionaryViewModel>(deserialized.Dictionaries.Select(d => new DictionaryViewModel(d)));
-                            }
-                        }
-                    }
-                    else
-                    {
-                        //「いいえ」ならローカルをアップロード
-                        await client.Upload("/dic", JsonSerializer.Serialize(new Archive(DictView)));
-                    }
-                }
-            }
-            Preferences.Default.Set("is_sync_successful", true);
-        }
-        catch(Exception e)
-        {
-            Debug.Write(e);
-            Preferences.Default.Set("is_sync_successful", false);
-        }
     }
 }
 

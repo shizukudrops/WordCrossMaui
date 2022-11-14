@@ -8,6 +8,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Diagnostics;
 using Dropbox.Api.Files;
+using System.Collections.ObjectModel;
+using System.Text.Json;
 
 namespace WordCrossMaui
 {
@@ -30,7 +32,7 @@ namespace WordCrossMaui
         // URL to receive access token from JS.
         private readonly Uri SecondaryRedirectUri = new Uri(LoopbackHost + "token");
 
-        public DropboxInterop() 
+        public DropboxInterop()
         {
             DropboxCertHelper.InitializeCertPinning();
         }
@@ -59,7 +61,7 @@ namespace WordCrossMaui
                     {
                         var file = item.AsFile;
 
-                        if(file.Name == fileName)
+                        if (file.Name == fileName)
                         {
                             return true;
                         }
@@ -84,6 +86,76 @@ namespace WordCrossMaui
                 }
 
                 return false;
+            }
+        }
+
+        public async Task<(SyncResult, Archive?)> Sync()
+        {
+            string? localFile = null;
+            Archive? local = null;
+
+            try
+            {
+                //ローカルに辞書が存在するか
+                if (File.Exists(Env.PathToDictionary))
+                {
+                    //存在するならロード
+                    localFile = File.ReadAllText(Env.PathToDictionary);
+                    local = JsonSerializer.Deserialize<Archive>(localFile);
+                }
+                else
+                {
+                    if (await IsFileExist("", "dic"))
+                    {
+                        //存在せず、クラウドにあるならクラウドを採用
+                        var cloudFile = await Download("/dic");
+                        var cloud = JsonSerializer.Deserialize<Archive>(cloudFile);
+                        return (SyncResult.CloudDownload, cloud);
+                    }
+                    else
+                    {
+                        return(SyncResult.Fail, null);
+                    }
+                }
+
+                //クラウドに辞書が存在するか確認
+                if (await IsFileExist("", "dic"))
+                {
+                    //存在するならロード
+                    var cloudFile = await Download("/dic");
+                    var cloud = JsonSerializer.Deserialize<Archive>(cloudFile);
+
+                    if (local.ClientId == cloud.ClientId)
+                    {
+                        //自分がアップロードしたデータなら、常にローカルの方が新しいのでアップロードしてよい
+                        await Upload("/dic", JsonSerializer.Serialize(local));
+                        return (SyncResult.LocalUpload, local);
+                    }
+                    else
+                    {
+                        if (local.TimeStamp >= cloud.TimeStamp)
+                        {
+                            await Upload("/dic", JsonSerializer.Serialize(local));
+                            return (SyncResult.LocalUpload, local);
+                        }
+                        else
+                        {
+                            return (SyncResult.CloudDownload, cloud);
+                        }
+                    }
+
+                }
+                else
+                {
+                    //クラウドに存在しなければ常にアップロードする
+                    await Upload("/dic", JsonSerializer.Serialize(local));
+                    return (SyncResult.LocalUpload, local);
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.Write(e);
+                return (SyncResult.Fail, null);
             }
         }
 
