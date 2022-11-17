@@ -27,7 +27,7 @@
                 <Button ImageSource="manage.png" Text="辞書の管理" FontSize="11" HeightRequest="45" Clicked="ManageDictionary_Clicked" />
             </HorizontalStackLayout>
 
-            <ImageButton Grid.Column="2" Source="info.png" WidthRequest="45" HeightRequest="45" Padding="10" Clicked="About_Clicked" HorizontalOptions="End" />
+            <ImageButton Grid.Column="2" Source="settings.png" WidthRequest="45" HeightRequest="45" Padding="10" Clicked="About_Clicked" HorizontalOptions="End" />
         </Grid>
     </Shell.TitleView>
 
