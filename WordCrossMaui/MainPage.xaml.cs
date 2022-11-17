@@ -37,11 +37,16 @@ public partial class MainPage : ContentPage
         {
             if(value == null) return;
 
+
             File.WriteAllText(Env.PathToDictionary, JsonSerializer.Serialize(new Archive(value)));
 
             if (Preferences.Get("sync_with_dropbox", false))
             {
                 SyncWithDropbox();
+            }
+            else
+            {
+                DictView = value;
             }
         }
     }
