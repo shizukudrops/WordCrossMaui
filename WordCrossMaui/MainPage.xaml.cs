@@ -37,7 +37,7 @@ public partial class MainPage : ContentPage
         {
             if(value == null) return;
 
-            File.WriteAllText(Env.PathToDictionary, JsonSerializer.Serialize(value));
+            File.WriteAllText(Env.PathToDictionary, JsonSerializer.Serialize(Extensions.Convert(value)));
 
             DictView = value;
         }
