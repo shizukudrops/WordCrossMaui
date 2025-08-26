@@ -215,12 +215,7 @@ public partial class MainPage : ContentPage
 
     private async void About_Clicked(object sender, EventArgs e)
     {
-        var param = new Dictionary<string, object>
-        {
-            {"CurrentDictView", Extensions.Clone(DictView)}
-        };
-
-        await Shell.Current.GoToAsync("///About", param);
+        await Shell.Current.GoToAsync("///About");
     }
 }
 
