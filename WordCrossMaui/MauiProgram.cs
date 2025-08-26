@@ -15,6 +15,18 @@ public static class MauiProgram
 				fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
 			});
 
-		return builder.Build();
+        //CollectionViewのMultipleSelection時のハイライトがバグっている問題の回避
+        //https://github.com/dotnet/maui/issues/16066
+#if WINDOWS
+
+        Microsoft.Maui.Controls.Handlers.Items.CollectionViewHandler.Mapper.AppendToMapping("DisableMultiselectCheckbox",
+        (handler, view) =>
+        {
+            handler.PlatformView.IsMultiSelectCheckBoxEnabled = false;
+        });
+
+#endif
+
+        return builder.Build();
 	}
 }

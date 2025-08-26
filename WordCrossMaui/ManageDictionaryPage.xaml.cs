@@ -36,6 +36,7 @@ public partial class ManageDictionaryPage : ContentPage
 		InitializeComponent();
 
         dictList.ItemsSource = dictionaryList;
+        
         dictList.ItemTemplate = new DataTemplate(() =>
         {
             var label = new Label();
@@ -47,8 +48,8 @@ public partial class ManageDictionaryPage : ContentPage
                 {
                     label
                 },
-                Margin = new Thickness(-24, 0, 4, 0),
-                Padding = new Thickness(40, 8, 8, 8)
+                Margin = new Thickness(0, 0, 4, 0),
+                Padding = new Thickness(30, 8, 8, 8)
             };
             layout.SetBinding(BackgroundColorProperty, new Binding("BackgroundColor"));
 
