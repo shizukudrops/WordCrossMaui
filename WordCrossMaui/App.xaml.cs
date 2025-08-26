@@ -23,15 +23,6 @@ public partial class App : Application
                 File.Delete(Env.PathToDictionary);
             }
         }
-
-        //初回起動時のみIDを割り振る
-        if (Preferences.Get("client_id", null) == null)
-        {
-            Preferences.Default.Set("client_id", Guid.NewGuid().ToString());
-        }
-
-        //ver1.9.2の辞書データを変換
-        Updater.ConvertDictionaryType();
     }
 
     protected override Window CreateWindow(IActivationState? activationState)

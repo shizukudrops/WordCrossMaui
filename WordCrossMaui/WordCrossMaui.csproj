@@ -59,7 +59,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <PackageReference Include="Dropbox.Api" Version="6.33.0" />
 	  <PackageReference Include="HtmlAgilityPack" Version="1.11.46" />
 	</ItemGroup>
 

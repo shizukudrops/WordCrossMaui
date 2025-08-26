@@ -8,7 +8,6 @@ namespace WordCrossMaui
 {
     internal static class Env
     {
-        public static readonly string PathToDictionaryV1 = Path.Join(FileSystem.AppDataDirectory, "dic");
-        public static readonly string PathToDictionary = Path.Join(FileSystem.AppDataDirectory, "dicv2");
+        public static readonly string PathToDictionary = Path.Join(FileSystem.AppDataDirectory, "dic");
     }
 }

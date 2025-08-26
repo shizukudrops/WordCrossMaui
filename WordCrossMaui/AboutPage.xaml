@@ -4,11 +4,6 @@
              x:Class="WordCrossMaui.AboutPage">
 
     <VerticalStackLayout Margin="50, 10, 50, 50" Spacing="10" HorizontalOptions="Center">
-        <HorizontalStackLayout Spacing="10" HorizontalOptions="Center">
-            <Label Text="Dropboxで辞書リストを同期" VerticalOptions="Center" />
-            <Switch x:Name="dropboxSyncSwitch" VerticalOptions="Center" Toggled="OnDropboxSyncToggled" />
-        </HorizontalStackLayout>
-
         <VerticalStackLayout Margin="0, 20, 0, 0" Spacing="10">
             <Label x:Name="AppNameLabel" HorizontalOptions="Center" FontSize="Medium" />
             <Label x:Name="VersionLabel" HorizontalOptions="Center" FontSize="Default" />

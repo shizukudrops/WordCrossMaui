@@ -37,16 +37,9 @@ public partial class MainPage : ContentPage
         {
             if(value == null) return;
 
-            File.WriteAllText(Env.PathToDictionary, JsonSerializer.Serialize(new Archive(value)));
+            File.WriteAllText(Env.PathToDictionary, JsonSerializer.Serialize(value));
 
-            if (Preferences.Get("sync_with_dropbox", false))
-            {
-                SyncWithDropbox();
-            }
-            else
-            {
-                DictView = value;
-            }
+            DictView = value;
         }
     }
 
@@ -69,20 +62,13 @@ public partial class MainPage : ContentPage
         BindingContext = this;
 
         //辞書リストをロード
-        if (Preferences.Get("sync_with_dropbox", false))
+        if (File.Exists(Env.PathToDictionary))
         {
-            SyncWithDropbox();
+            LoadLocal();
         }
         else
         {
-            if (File.Exists(Env.PathToDictionary))
-            {
-                LoadLocal();
-            }
-            else
-            {
-                LoadDefault();
-            }
+            LoadDefault();
         }
 
         dictList.ItemsSource = DictView;
@@ -116,32 +102,6 @@ public partial class MainPage : ContentPage
         }
     }
 
-    private async void SyncWithDropbox()
-    {
-        var client = new DropboxInterop();
-        var (result, archive) = await client.Sync();
-
-        if(result == SyncResult.CloudDownload)
-        {
-            UpdatedDictView = new ObservableCollection<DictionaryViewModel>(Extensions.Convert(archive.Dictionaries));
-        }
-        else if(result == SyncResult.LocalUpload)
-        {
-            DictView = new ObservableCollection<DictionaryViewModel>(Extensions.Convert(archive.Dictionaries));
-        }
-        else if(result == SyncResult.Fail)
-        {
-            if (File.Exists(Env.PathToDictionary))
-            {
-                LoadLocal();
-            }
-            else
-            {
-                LoadDefault();
-            }
-        }
-    }
-
     private void LoadDefault()
     {
         UpdatedDictView = new ObservableCollection<DictionaryViewModel>(Extensions.Convert(PresetDictionaries.DictionaryList.Where(d => d.IsDefault)));
@@ -153,11 +113,11 @@ public partial class MainPage : ContentPage
         {
             var rawData = File.ReadAllText(Env.PathToDictionary);
 
-            var deserialized = JsonSerializer.Deserialize<Archive>(rawData);
+            var deserialized = JsonSerializer.Deserialize<ObservableCollection<DictionaryInfo>>(rawData);
 
             if (deserialized != null)
             {
-                DictView = new ObservableCollection<DictionaryViewModel>(Extensions.Convert(deserialized.Dictionaries));
+                DictView = new ObservableCollection<DictionaryViewModel>(Extensions.Convert(deserialized));
             }
         }
         catch (Exception e)
