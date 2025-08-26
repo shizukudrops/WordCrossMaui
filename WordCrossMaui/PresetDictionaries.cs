@@ -21,10 +21,7 @@ namespace WordCrossMaui
                     new DictionaryInfo("American Heritage", "https://ahdictionary.com/word/search.html?q=", "+", "", false),
                     new DictionaryInfo("英辞郎", "https://eow.alc.co.jp/", "+", "", true),
                     new DictionaryInfo("Weblio英和・和英", "https://ejje.weblio.jp/content/", "+", "", true),
-                    new DictionaryInfo("goo辞書英和・和英", "https://dictionary.goo.ne.jp/srch/en/", "+", "/m0u/", true),
                     new DictionaryInfo("DictJuggler", "https://www.dictjuggler.net/yakugo/?word=", "%20", "", true),
-                    new DictionaryInfo("WordNet 3.1", "http://wordnetweb.princeton.edu/perl/webwn?s=", "+", "", true),
-                    new DictionaryInfo("goo辞書国語", "https://dictionary.goo.ne.jp/srch/jn/", "+", "/m0u/", true),
                     new DictionaryInfo("Wikipedia日本語版", "https://ja.wikipedia.org/wiki/", "", "", true),
                     new DictionaryInfo("Wikipedia English", "https://en.wikipedia.org/wiki/", "", "", true),
                 });
